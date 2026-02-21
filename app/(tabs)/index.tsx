@@ -126,7 +126,10 @@ export default function HomeScreen() {
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 24 }}
         ListHeaderComponent={
           <View className="mb-6">
-            <Text className="text-3xl font-bold text-foreground mb-1">Study Planner</Text>
+            <Text className="text-3xl font-bold text-foreground mb-1">Falcon's Study Planner</Text>
+            <Text className="text-xs text-muted mb-2">
+              Founder: Korede Omotosho
+            </Text>
             <Text className="text-sm text-muted">
               {activeGoals.length} active goal{activeGoals.length !== 1 ? 's' : ''}
             </Text>

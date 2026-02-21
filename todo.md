@@ -43,3 +43,15 @@
 
 - [ ] Final checkpoint before publishing
 - [ ] App ready for user delivery
+
+## Branding Tweaks
+
+- [x] Create falcon-themed app icon
+- [x] Update app name to "Falcon's Study Planner" in app.config.ts
+- [x] Update app name in Home screen header
+- [x] Add founder credit to Settings screen
+- [x] Add founder credit to Home screen
+- [x] Add founder credit to Statistics screen
+- [x] Update all icon locations with new falcon icon
+- [x] Test all changes
+- [ ] Create final checkpoint

@@ -28,11 +28,11 @@ const schemeFromBundleId = `manus${timestamp}`;
 
 const env = {
   // App branding - update these values directly (do not use env vars)
-  appName: "Study Planner",
+  appName: "Falcon's Study Planner",
   appSlug: "study-planner-app",
   // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
   // Leave empty to use the default icon from assets/images/icon.png
-  logoUrl: "https://private-us-east-1.manuscdn.com/sessionFile/UddSjs37vNKx6d7x2yDNYN/sandbox/IjPlKMrXaOLyx9CJzBHlsR-img-1_1771585187000_na1fn_aWNvbg.png",
+  logoUrl: "https://private-us-east-1.manuscdn.com/sessionFile/UddSjs37vNKx6d7x2yDNYN/sandbox/tw22bCFWAgiT8lJjn4Xztd-img-1_1771585849000_na1fn_aWNvbg.png",
   scheme: schemeFromBundleId,
   iosBundleId: bundleId,
   androidPackage: bundleId,

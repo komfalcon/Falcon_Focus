@@ -19,7 +19,9 @@ export default function StatisticsScreen() {
     <ScreenContainer className="p-4">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View className="mb-8">
-          <Text className="text-3xl font-bold text-foreground mb-6">Statistics</Text>
+          <Text className="text-3xl font-bold text-foreground mb-2">Falcon's Study Planner</Text>
+          <Text className="text-sm text-muted mb-6">Founder: Korede Omotosho</Text>
+          <Text className="text-2xl font-bold text-foreground mb-6">Statistics</Text>
 
           {/* Summary Cards */}
           <View className="flex-row gap-3 mb-6">

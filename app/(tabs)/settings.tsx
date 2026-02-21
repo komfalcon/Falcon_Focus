@@ -61,13 +61,18 @@ export default function SettingsScreen() {
 
             <View className="bg-surface rounded-lg p-4 border border-border">
               <View className="mb-4">
-                <Text className="text-sm font-semibold text-foreground">Study Planner</Text>
+                <Text className="text-sm font-semibold text-foreground">Falcon's Study Planner</Text>
                 <Text className="text-xs text-muted mt-1">Version 1.0.0</Text>
+              </View>
+
+              <View className="border-t border-border pt-4 mb-4">
+                <Text className="text-xs font-semibold text-primary mb-2">Founder</Text>
+                <Text className="text-sm text-foreground">Korede Omotosho</Text>
               </View>
 
               <View className="border-t border-border pt-4">
                 <Text className="text-sm text-foreground leading-relaxed">
-                  Study Planner helps you set learning goals, break them into manageable tasks, and track your progress over time.
+                  Falcon's Study Planner helps you set learning goals, break them into manageable tasks, and track your progress over time.
                 </Text>
               </View>
             </View>
