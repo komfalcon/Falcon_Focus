@@ -1,277 +1,310 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Goal, Task, GoalWithProgress, Statistics, DailyActivity } from './types';
+import { Goal, Task, StudySession, StudyBlock, EnergyLog, UserProgress, Note, FlashcardDeck } from './types';
 
 interface StudyContextType {
-  goals: GoalWithProgress[];
-  addGoal: (goal: Omit<Goal, 'id' | 'createdAt' | 'tasks'>) => void;
-  updateGoal: (id: string, goal: Partial<Goal>) => void;
-  deleteGoal: (id: string) => void;
-  addTask: (goalId: string, task: Omit<Task, 'id' | 'createdAt' | 'goalId'>) => void;
-  updateTask: (goalId: string, taskId: string, task: Partial<Task>) => void;
-  deleteTask: (goalId: string, taskId: string) => void;
-  toggleTask: (goalId: string, taskId: string) => void;
-  getStatistics: () => Statistics;
-  isLoading: boolean;
+  goals: Goal[];
+  tasks: Task[];
+  studySessions: StudySession[];
+  studyBlocks: StudyBlock[];
+  energyLogs: EnergyLog[];
+  userProgress: UserProgress;
+  notes: Note[];
+  flashcardDecks: FlashcardDeck[];
+  
+  // Goal actions
+  addGoal: (goal: Goal) => Promise<void>;
+  updateGoal: (goal: Goal) => Promise<void>;
+  deleteGoal: (goalId: string) => Promise<void>;
+  
+  // Task actions
+  addTask: (task: Task) => Promise<void>;
+  updateTask: (task: Task) => Promise<void>;
+  deleteTask: (taskId: string) => Promise<void>;
+  completeTask: (taskId: string) => Promise<void>;
+  
+  // Study session actions
+  addStudySession: (session: StudySession) => Promise<void>;
+  completeStudySession: (sessionId: string) => Promise<void>;
+  
+  // Study block actions
+  addStudyBlock: (block: StudyBlock) => Promise<void>;
+  updateStudyBlock: (block: StudyBlock) => Promise<void>;
+  deleteStudyBlock: (blockId: string) => Promise<void>;
+  
+  // Energy logging
+  logEnergy: (level: number) => Promise<void>;
+  
+  // Progress
+  updateUserProgress: (progress: Partial<UserProgress>) => Promise<void>;
+  getStreakCount: () => number;
+  getAltitudePercentage: () => number;
 }
 
 const StudyContext = createContext<StudyContextType | undefined>(undefined);
 
-interface StudyState {
-  goals: Goal[];
-  isLoading: boolean;
-}
+const STORAGE_KEY = 'falcon_focus_data';
 
-type StudyAction =
-  | { type: 'SET_GOALS'; payload: Goal[] }
-  | { type: 'ADD_GOAL'; payload: Goal }
-  | { type: 'UPDATE_GOAL'; payload: { id: string; goal: Partial<Goal> } }
-  | { type: 'DELETE_GOAL'; payload: string }
-  | { type: 'ADD_TASK'; payload: { goalId: string; task: Task } }
-  | { type: 'UPDATE_TASK'; payload: { goalId: string; taskId: string; task: Partial<Task> } }
-  | { type: 'DELETE_TASK'; payload: { goalId: string; taskId: string } }
-  | { type: 'SET_LOADING'; payload: boolean };
+const DEFAULT_PROGRESS: UserProgress = {
+  totalStudyHours: 0,
+  totalSessions: 0,
+  currentStreak: 0,
+  longestStreak: 0,
+  xp: 0,
+  level: 'Fledgling',
+  badges: [],
+  completedGoals: 0,
+  completedTasks: 0,
+};
 
-const STORAGE_KEY = 'study_planner_goals';
+export function StudyProvider({ children }: { children: React.ReactNode }) {
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [studySessions, setStudySessions] = useState<StudySession[]>([]);
+  const [studyBlocks, setStudyBlocks] = useState<StudyBlock[]>([]);
+  const [energyLogs, setEnergyLogs] = useState<EnergyLog[]>([]);
+  const [userProgress, setUserProgress] = useState<UserProgress>(DEFAULT_PROGRESS);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [flashcardDecks, setFlashcardDecks] = useState<FlashcardDeck[]>([]);
 
-function studyReducer(state: StudyState, action: StudyAction): StudyState {
-  switch (action.type) {
-    case 'SET_GOALS':
-      return { ...state, goals: action.payload };
-
-    case 'ADD_GOAL':
-      return { ...state, goals: [...state.goals, action.payload] };
-
-    case 'UPDATE_GOAL': {
-      const { id, goal } = action.payload;
-      return {
-        ...state,
-        goals: state.goals.map((g) =>
-          g.id === id ? { ...g, ...goal } : g
-        ),
-      };
-    }
-
-    case 'DELETE_GOAL':
-      return { ...state, goals: state.goals.filter((g) => g.id !== action.payload) };
-
-    case 'ADD_TASK': {
-      const { goalId, task } = action.payload;
-      return {
-        ...state,
-        goals: state.goals.map((g) =>
-          g.id === goalId ? { ...g, tasks: [...g.tasks, task] } : g
-        ),
-      };
-    }
-
-    case 'UPDATE_TASK': {
-      const { goalId, taskId, task } = action.payload;
-      return {
-        ...state,
-        goals: state.goals.map((g) =>
-          g.id === goalId
-            ? {
-                ...g,
-                tasks: g.tasks.map((t) =>
-                  t.id === taskId ? { ...t, ...task } : t
-                ),
-              }
-            : g
-        ),
-      };
-    }
-
-    case 'DELETE_TASK': {
-      const { goalId, taskId } = action.payload;
-      return {
-        ...state,
-        goals: state.goals.map((g) =>
-          g.id === goalId
-            ? { ...g, tasks: g.tasks.filter((t) => t.id !== taskId) }
-            : g
-        ),
-      };
-    }
-
-    case 'SET_LOADING':
-      return { ...state, isLoading: action.payload };
-
-    default:
-      return state;
-  }
-}
-
-export function StudyProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(studyReducer, {
-    goals: [],
-    isLoading: true,
-  });
-
-  // Load goals from AsyncStorage on mount
+  // Load data from storage on mount
   useEffect(() => {
-    loadGoals();
+    loadData();
   }, []);
 
-  // Save goals to AsyncStorage whenever they change
-  useEffect(() => {
-    if (!state.isLoading) {
-      saveGoals(state.goals);
-    }
-  }, [state.goals, state.isLoading]);
-
-  async function loadGoals() {
+  const loadData = async () => {
     try {
-      const data = await AsyncStorage.getItem(STORAGE_KEY);
-      if (data) {
-        const goals = JSON.parse(data).map((g: any) => ({
-          ...g,
-          createdAt: new Date(g.createdAt),
-          targetDate: g.targetDate ? new Date(g.targetDate) : undefined,
-          tasks: g.tasks.map((t: any) => ({
-            ...t,
-            createdAt: new Date(t.createdAt),
-            completedAt: t.completedAt ? new Date(t.completedAt) : undefined,
-          })),
-        }));
-        dispatch({ type: 'SET_GOALS', payload: goals });
+      const stored = await AsyncStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const data = JSON.parse(stored);
+        setGoals(data.goals || []);
+        setTasks(data.tasks || []);
+        setStudySessions(data.studySessions || []);
+        setStudyBlocks(data.studyBlocks || []);
+        setEnergyLogs(data.energyLogs || []);
+        setUserProgress(data.userProgress || DEFAULT_PROGRESS);
+        setNotes(data.notes || []);
+        setFlashcardDecks(data.flashcardDecks || []);
       }
     } catch (error) {
-      console.error('Failed to load goals:', error);
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
+      console.error('Error loading data:', error);
     }
-  }
-
-  async function saveGoals(goals: Goal[]) {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(goals));
-    } catch (error) {
-      console.error('Failed to save goals:', error);
-    }
-  }
-
-  function addGoal(goal: Omit<Goal, 'id' | 'createdAt' | 'tasks'>) {
-    const newGoal: Goal = {
-      ...goal,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      tasks: [],
-    };
-    dispatch({ type: 'ADD_GOAL', payload: newGoal });
-  }
-
-  function updateGoal(id: string, goal: Partial<Goal>) {
-    dispatch({ type: 'UPDATE_GOAL', payload: { id, goal } });
-  }
-
-  function deleteGoal(id: string) {
-    dispatch({ type: 'DELETE_GOAL', payload: id });
-  }
-
-  function addTask(goalId: string, task: Omit<Task, 'id' | 'createdAt' | 'goalId'>) {
-    const newTask: Task = {
-      ...task,
-      id: Date.now().toString(),
-      goalId,
-      createdAt: new Date(),
-    };
-    dispatch({ type: 'ADD_TASK', payload: { goalId, task: newTask } });
-  }
-
-  function updateTask(goalId: string, taskId: string, task: Partial<Task>) {
-    dispatch({ type: 'UPDATE_TASK', payload: { goalId, taskId, task } });
-  }
-
-  function deleteTask(goalId: string, taskId: string) {
-    dispatch({ type: 'DELETE_TASK', payload: { goalId, taskId } });
-  }
-
-  function toggleTask(goalId: string, taskId: string) {
-    const goal = state.goals.find((g) => g.id === goalId);
-    if (!goal) return;
-
-    const task = goal.tasks.find((t) => t.id === taskId);
-    if (!task) return;
-
-    updateTask(goalId, taskId, {
-      completed: !task.completed,
-      completedAt: !task.completed ? new Date() : undefined,
-    });
-  }
-
-  function getStatistics(): Statistics {
-    const allTasks = state.goals.flatMap((g) => g.tasks);
-    const completedTasks = allTasks.filter((t) => t.completed);
-    const completedGoals = state.goals.filter((g) => g.status === 'completed');
-
-    const today = new Date();
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay());
-
-    const weeklyActivity: DailyActivity[] = [];
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(weekStart);
-      date.setDate(weekStart.getDate() + i);
-      const dayStart = new Date(date);
-      dayStart.setHours(0, 0, 0, 0);
-      const dayEnd = new Date(date);
-      dayEnd.setHours(23, 59, 59, 999);
-
-      const tasksCompletedToday = completedTasks.filter(
-        (t) => t.completedAt && t.completedAt >= dayStart && t.completedAt <= dayEnd
-      ).length;
-
-      weeklyActivity.push({
-        date,
-        tasksCompleted: tasksCompletedToday,
-      });
-    }
-
-    const goalsOverdue = state.goals.filter(
-      (g) => g.targetDate && g.targetDate < today && g.status === 'active'
-    ).length;
-
-    const goalsOnTrack = state.goals.filter(
-      (g) => !g.targetDate || (g.targetDate >= today && g.status === 'active')
-    ).length;
-
-    return {
-      totalGoals: state.goals.length,
-      completedGoals: completedGoals.length,
-      totalTasks: allTasks.length,
-      completedTasks: completedTasks.length,
-      completionRate: allTasks.length > 0 ? (completedTasks.length / allTasks.length) * 100 : 0,
-      goalsOnTrack,
-      goalsOverdue,
-      weeklyActivity,
-    };
-  }
-
-  const goalsWithProgress: GoalWithProgress[] = state.goals.map((goal) => {
-    const completedTasks = goal.tasks.filter((t) => t.completed).length;
-    return {
-      ...goal,
-      totalTasks: goal.tasks.length,
-      completedTasks,
-      progressPercentage: goal.tasks.length > 0 ? (completedTasks / goal.tasks.length) * 100 : 0,
-    };
-  });
-
-  const value: StudyContextType = {
-    goals: goalsWithProgress,
-    addGoal,
-    updateGoal,
-    deleteGoal,
-    addTask,
-    updateTask,
-    deleteTask,
-    toggleTask,
-    getStatistics,
-    isLoading: state.isLoading,
   };
 
-  return <StudyContext.Provider value={value}>{children}</StudyContext.Provider>;
+  const saveData = useCallback(
+    async (newGoals: Goal[], newTasks: Task[], newSessions: StudySession[], newBlocks: StudyBlock[], newEnergy: EnergyLog[], newProgress: UserProgress, newNotes: Note[], newDecks: FlashcardDeck[]) => {
+      try {
+        const data = {
+          goals: newGoals,
+          tasks: newTasks,
+          studySessions: newSessions,
+          studyBlocks: newBlocks,
+          energyLogs: newEnergy,
+          userProgress: newProgress,
+          notes: newNotes,
+          flashcardDecks: newDecks,
+        };
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (error) {
+        console.error('Error saving data:', error);
+      }
+    },
+    []
+  );
+
+  const addGoal = useCallback(
+    async (goal: Goal) => {
+      const newGoals = [...goals, goal];
+      setGoals(newGoals);
+      await saveData(newGoals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const updateGoal = useCallback(
+    async (goal: Goal) => {
+      const newGoals = goals.map((g) => (g.id === goal.id ? goal : g));
+      setGoals(newGoals);
+      await saveData(newGoals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const deleteGoal = useCallback(
+    async (goalId: string) => {
+      const newGoals = goals.filter((g) => g.id !== goalId);
+      setGoals(newGoals);
+      await saveData(newGoals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const addTask = useCallback(
+    async (task: Task) => {
+      const newTasks = [...tasks, task];
+      setTasks(newTasks);
+      await saveData(goals, newTasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const updateTask = useCallback(
+    async (task: Task) => {
+      const newTasks = tasks.map((t) => (t.id === task.id ? task : t));
+      setTasks(newTasks);
+      await saveData(goals, newTasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const deleteTask = useCallback(
+    async (taskId: string) => {
+      const newTasks = tasks.filter((t) => t.id !== taskId);
+      setTasks(newTasks);
+      await saveData(goals, newTasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const completeTask = useCallback(
+    async (taskId: string) => {
+      const newTasks = tasks.map((t) =>
+        t.id === taskId ? { ...t, completed: true, completedAt: Date.now() } : t
+      );
+      setTasks(newTasks);
+      const newProgress = { ...userProgress, completedTasks: userProgress.completedTasks + 1 };
+      setUserProgress(newProgress);
+      await saveData(goals, newTasks, studySessions, studyBlocks, energyLogs, newProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const addStudySession = useCallback(
+    async (session: StudySession) => {
+      const newSessions = [...studySessions, session];
+      setStudySessions(newSessions);
+      await saveData(goals, tasks, newSessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const completeStudySession = useCallback(
+    async (sessionId: string) => {
+      const session = studySessions.find((s) => s.id === sessionId);
+      if (!session) return;
+
+      const completedAt = Date.now();
+      const newSessions = studySessions.map((s) =>
+        s.id === sessionId ? { ...s, completedAt } : s
+      );
+      setStudySessions(newSessions);
+
+      const studyHours = session.duration / 60;
+      const newProgress = {
+        ...userProgress,
+        totalStudyHours: userProgress.totalStudyHours + studyHours,
+        totalSessions: userProgress.totalSessions + 1,
+        xp: userProgress.xp + Math.floor(session.duration * 1.5),
+      };
+      setUserProgress(newProgress);
+
+      await saveData(goals, tasks, newSessions, studyBlocks, energyLogs, newProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const addStudyBlock = useCallback(
+    async (block: StudyBlock) => {
+      const newBlocks = [...studyBlocks, block];
+      setStudyBlocks(newBlocks);
+      await saveData(goals, tasks, studySessions, newBlocks, energyLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const updateStudyBlock = useCallback(
+    async (block: StudyBlock) => {
+      const newBlocks = studyBlocks.map((b) => (b.id === block.id ? block : b));
+      setStudyBlocks(newBlocks);
+      await saveData(goals, tasks, studySessions, newBlocks, energyLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const deleteStudyBlock = useCallback(
+    async (blockId: string) => {
+      const newBlocks = studyBlocks.filter((b) => b.id !== blockId);
+      setStudyBlocks(newBlocks);
+      await saveData(goals, tasks, studySessions, newBlocks, energyLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const logEnergy = useCallback(
+    async (level: number) => {
+      const newLog: EnergyLog = {
+        id: Date.now().toString(),
+        level,
+        timestamp: Date.now(),
+      };
+      const newLogs = [...energyLogs, newLog];
+      setEnergyLogs(newLogs);
+      await saveData(goals, tasks, studySessions, studyBlocks, newLogs, userProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const updateUserProgress = useCallback(
+    async (updates: Partial<UserProgress>) => {
+      const newProgress = { ...userProgress, ...updates };
+      setUserProgress(newProgress);
+      await saveData(goals, tasks, studySessions, studyBlocks, energyLogs, newProgress, notes, flashcardDecks);
+    },
+    [goals, tasks, studySessions, studyBlocks, energyLogs, userProgress, notes, flashcardDecks, saveData]
+  );
+
+  const getStreakCount = useCallback(() => {
+    return userProgress.currentStreak;
+  }, [userProgress]);
+
+  const getAltitudePercentage = useCallback(() => {
+    if (tasks.length === 0) return 0;
+    const completedTasks = tasks.filter((t) => t.completed).length;
+    return Math.round((completedTasks / tasks.length) * 100);
+  }, [tasks]);
+
+  return (
+    <StudyContext.Provider
+      value={{
+        goals,
+        tasks,
+        studySessions,
+        studyBlocks,
+        energyLogs,
+        userProgress,
+        notes,
+        flashcardDecks,
+        addGoal,
+        updateGoal,
+        deleteGoal,
+        addTask,
+        updateTask,
+        deleteTask,
+        completeTask,
+        addStudySession,
+        completeStudySession,
+        addStudyBlock,
+        updateStudyBlock,
+        deleteStudyBlock,
+        logEnergy,
+        updateUserProgress,
+        getStreakCount,
+        getAltitudePercentage,
+      }}
+    >
+      {children}
+    </StudyContext.Provider>
+  );
 }
 
 export function useStudy() {

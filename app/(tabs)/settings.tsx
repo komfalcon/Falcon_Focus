@@ -1,10 +1,9 @@
-import { View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Switch } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useColors } from '@/hooks/use-colors';
 import { useState, useEffect } from 'react';
 import { useThemeContext } from '@/lib/theme-provider';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
@@ -24,7 +23,7 @@ export default function SettingsScreen() {
 
   return (
     <ScreenContainer className="p-4">
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="mb-8">
           <Text className="text-3xl font-bold text-foreground mb-6">Settings</Text>
 
@@ -33,18 +32,11 @@ export default function SettingsScreen() {
             <Text className="text-sm font-semibold text-muted uppercase mb-4">Appearance</Text>
 
             <View className="bg-surface rounded-lg p-4 border border-border flex-row justify-between items-center">
-              <View className="flex-row items-center gap-3">
-                <IconSymbol
-                  name="gearshape.fill"
-                  size={24}
-                  color={colors.primary}
-                />
-                <View>
-                  <Text className="text-base font-semibold text-foreground">Dark Mode</Text>
-                  <Text className="text-xs text-muted mt-1">
-                    {isDarkMode ? 'Enabled' : 'Disabled'}
-                  </Text>
-                </View>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-foreground">Dark Mode</Text>
+                <Text className="text-xs text-muted mt-1">
+                  {isDarkMode ? 'Enabled' : 'Disabled'}
+                </Text>
               </View>
               <Switch
                 value={isDarkMode}
@@ -55,64 +47,93 @@ export default function SettingsScreen() {
             </View>
           </View>
 
+          {/* Notifications */}
+          <View className="mb-8">
+            <Text className="text-sm font-semibold text-muted uppercase mb-4">Notifications</Text>
+
+            <View className="gap-3">
+              <View className="bg-surface rounded-lg p-4 border border-border flex-row justify-between items-center">
+                <View className="flex-1">
+                  <Text className="text-sm font-semibold text-foreground">Push Notifications</Text>
+                  <Text className="text-xs text-muted mt-1">Session reminders & achievements</Text>
+                </View>
+                <Switch
+                  value={true}
+                  onValueChange={() => {}}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.primary}
+                />
+              </View>
+
+              <View className="bg-surface rounded-lg p-4 border border-border flex-row justify-between items-center">
+                <View className="flex-1">
+                  <Text className="text-sm font-semibold text-foreground">Alarms</Text>
+                  <Text className="text-xs text-muted mt-1">Study schedule alerts</Text>
+                </View>
+                <Switch
+                  value={true}
+                  onValueChange={() => {}}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.primary}
+                />
+              </View>
+            </View>
+          </View>
+
           {/* About */}
           <View className="mb-8">
             <Text className="text-sm font-semibold text-muted uppercase mb-4">About</Text>
 
             <View className="bg-surface rounded-lg p-4 border border-border">
               <View className="mb-4">
-                <Text className="text-sm font-semibold text-foreground">Falcon's Study Planner</Text>
+                <Text className="text-sm font-semibold text-foreground">Falcon Focus</Text>
                 <Text className="text-xs text-muted mt-1">Version 1.0.0</Text>
               </View>
 
               <View className="border-t border-border pt-4 mb-4">
+                <Text className="text-xs font-semibold text-primary mb-2">Tagline</Text>
+                <Text className="text-sm text-foreground italic">
+                  "Sharpen Your Vision. Soar to Success."
+                </Text>
+              </View>
+
+              <View className="border-t border-border pt-4 mb-4">
                 <Text className="text-xs font-semibold text-primary mb-2">Founder</Text>
-                <Text className="text-sm text-foreground">Korede Omotosho</Text>
+                <Text className="text-sm font-semibold text-foreground">Korede Omotosho</Text>
               </View>
 
               <View className="border-t border-border pt-4">
+                <Text className="text-xs font-semibold text-primary mb-2">Vision</Text>
                 <Text className="text-sm text-foreground leading-relaxed">
-                  Falcon's Study Planner helps you set learning goals, break them into manageable tasks, and track your progress over time.
+                  Born from one student's spark to help thousands soar. Falcon Focus is designed to be the ultimate study companion for students 13-25, combining powerful learning tools with immersive gamification to make studying engaging, effective, and inspiring.
                 </Text>
               </View>
             </View>
           </View>
 
-          {/* Tips */}
+          {/* Data & Privacy */}
           <View className="mb-8">
-            <Text className="text-sm font-semibold text-muted uppercase mb-4">Tips</Text>
+            <Text className="text-sm font-semibold text-muted uppercase mb-4">Data & Privacy</Text>
 
-            <View className="bg-primary/10 rounded-lg p-4 border border-primary">
-              <Text className="text-sm font-semibold text-primary mb-3">Getting Started</Text>
-              <View className="gap-2">
-                <Text className="text-xs text-foreground">
-                  • Create a goal by tapping the + button on the Home screen
-                </Text>
-                <Text className="text-xs text-foreground">
-                  • Break your goal into smaller tasks for better progress tracking
-                </Text>
-                <Text className="text-xs text-foreground">
-                  • Check off tasks as you complete them to see your progress
-                </Text>
-                <Text className="text-xs text-foreground">
-                  • View your statistics to stay motivated and track your learning journey
-                </Text>
-              </View>
+            <View className="gap-3">
+              <TouchableOpacity className="bg-surface rounded-lg p-4 border border-border active:opacity-80">
+                <Text className="text-sm font-semibold text-foreground">Export Data</Text>
+                <Text className="text-xs text-muted mt-1">Download your study data</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity className="bg-surface rounded-lg p-4 border border-border active:opacity-80">
+                <Text className="text-sm font-semibold text-foreground">Privacy Policy</Text>
+                <Text className="text-xs text-muted mt-1">Learn how we protect your data</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
-          {/* Data */}
-          <View>
-            <Text className="text-sm font-semibold text-muted uppercase mb-4">Data</Text>
-
-            <View className="bg-surface rounded-lg p-4 border border-border">
-              <Text className="text-sm text-foreground mb-3">
-                All your data is stored locally on your device. No cloud sync is required.
-              </Text>
-              <Text className="text-xs text-muted">
-                Your goals and tasks are automatically saved whenever you make changes.
-              </Text>
-            </View>
+          {/* Footer */}
+          <View className="bg-secondary/10 rounded-lg p-4 border border-secondary/30 items-center">
+            <Text className="text-xs text-secondary font-semibold mb-2">Falcon Focus by Korede Omotosho</Text>
+            <Text className="text-xs text-muted text-center">
+              Sharpen Your Vision. Soar to Success.
+            </Text>
           </View>
         </View>
       </ScrollView>
