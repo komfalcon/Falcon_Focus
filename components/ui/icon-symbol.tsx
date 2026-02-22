@@ -29,6 +29,7 @@ const MAPPING = {
   "checkmark.circle.fill": "check-circle",
   "trash.fill": "delete",
   "pencil.circle.fill": "edit",
+  "person.2.fill": "group",
 } as const;
 
 /**
