@@ -35,15 +35,25 @@ export default function SettingsScreen() {
     <ScreenContainer className="p-4">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="mb-8">
-          <Text className="text-3xl font-bold text-foreground mb-6">Settings</Text>
+          <Text className="text-3xl font-bold text-foreground mb-6 tracking-tight">Settings</Text>
 
           {/* Appearance */}
           <View className="mb-8">
-            <Text className="text-sm font-semibold text-muted uppercase mb-4">Appearance</Text>
+            <Text className="text-xs font-bold text-muted uppercase mb-4 tracking-wider">Appearance</Text>
 
-            <View className="bg-surface rounded-lg p-4 border border-border flex-row justify-between items-center">
+            <View
+              className="rounded-2xl p-4 flex-row justify-between items-center"
+              style={{
+                backgroundColor: colors.surface,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.03,
+                shadowRadius: 4,
+                elevation: 1,
+              }}
+            >
               <View className="flex-1">
-                <Text className="text-base font-semibold text-foreground">Dark Mode</Text>
+                <Text className="text-base font-bold text-foreground">Dark Mode</Text>
                 <Text className="text-xs text-muted mt-1">
                   {isDarkMode ? 'Enabled' : 'Disabled'}
                 </Text>
@@ -59,10 +69,20 @@ export default function SettingsScreen() {
 
           {/* Notifications */}
           <View className="mb-8">
-            <Text className="text-sm font-semibold text-muted uppercase mb-4">Notifications</Text>
+            <Text className="text-xs font-bold text-muted uppercase mb-4 tracking-wider">Notifications</Text>
 
             <View className="gap-3">
-              <View className="bg-surface rounded-lg p-4 border border-border flex-row justify-between items-center">
+              <View
+                className="rounded-2xl p-4 flex-row justify-between items-center"
+                style={{
+                  backgroundColor: colors.surface,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.03,
+                  shadowRadius: 4,
+                  elevation: 1,
+                }}
+              >
                 <View className="flex-1">
                   <Text className="text-sm font-semibold text-foreground">Push Notifications</Text>
                   <Text className="text-xs text-muted mt-1">Session reminders & achievements</Text>
@@ -79,7 +99,17 @@ export default function SettingsScreen() {
                 />
               </View>
 
-              <View className="bg-surface rounded-lg p-4 border border-border flex-row justify-between items-center">
+              <View
+                className="rounded-2xl p-4 flex-row justify-between items-center"
+                style={{
+                  backgroundColor: colors.surface,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.03,
+                  shadowRadius: 4,
+                  elevation: 1,
+                }}
+              >
                 <View className="flex-1">
                   <Text className="text-sm font-semibold text-foreground">Alarms</Text>
                   <Text className="text-xs text-muted mt-1">Study schedule alerts</Text>
@@ -100,28 +130,38 @@ export default function SettingsScreen() {
 
           {/* About */}
           <View className="mb-8">
-            <Text className="text-sm font-semibold text-muted uppercase mb-4">About</Text>
+            <Text className="text-xs font-bold text-muted uppercase mb-4 tracking-wider">About</Text>
 
-            <View className="bg-surface rounded-lg p-4 border border-border">
+            <View
+              className="rounded-2xl p-5"
+              style={{
+                backgroundColor: colors.surface,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.04,
+                shadowRadius: 8,
+                elevation: 2,
+              }}
+            >
               <View className="mb-4">
-                <Text className="text-sm font-semibold text-foreground">Falcon Focus</Text>
+                <Text className="text-base font-bold text-foreground">Falcon Focus</Text>
                 <Text className="text-xs text-muted mt-1">Version 1.0.0</Text>
               </View>
 
-              <View className="border-t border-border pt-4 mb-4">
-                <Text className="text-xs font-semibold text-primary mb-2">Tagline</Text>
+              <View className="border-t pt-4 mb-4" style={{ borderTopColor: colors.border }}>
+                <Text className="text-xs font-bold mb-2" style={{ color: colors.accent }}>Tagline</Text>
                 <Text className="text-sm text-foreground italic">
                   "Sharpen Your Vision. Soar to Success."
                 </Text>
               </View>
 
-              <View className="border-t border-border pt-4 mb-4">
-                <Text className="text-xs font-semibold text-primary mb-2">Founder</Text>
-                <Text className="text-sm font-semibold text-foreground">Korede Omotosho</Text>
+              <View className="border-t pt-4 mb-4" style={{ borderTopColor: colors.border }}>
+                <Text className="text-xs font-bold mb-2" style={{ color: colors.accent }}>Founder</Text>
+                <Text className="text-sm font-bold text-foreground">Korede Omotosho</Text>
               </View>
 
-              <View className="border-t border-border pt-4">
-                <Text className="text-xs font-semibold text-primary mb-2">Vision</Text>
+              <View className="border-t pt-4" style={{ borderTopColor: colors.border }}>
+                <Text className="text-xs font-bold mb-2" style={{ color: colors.accent }}>Vision</Text>
                 <Text className="text-sm text-foreground leading-relaxed">
                   Born from one student's spark to help thousands soar. Falcon Focus is designed to be the ultimate study companion for students 13-25, combining powerful learning tools with immersive gamification to make studying engaging, effective, and inspiring.
                 </Text>
@@ -131,15 +171,35 @@ export default function SettingsScreen() {
 
           {/* Data & Privacy */}
           <View className="mb-8">
-            <Text className="text-sm font-semibold text-muted uppercase mb-4">Data & Privacy</Text>
+            <Text className="text-xs font-bold text-muted uppercase mb-4 tracking-wider">Data & Privacy</Text>
 
             <View className="gap-3">
-              <TouchableOpacity className="bg-surface rounded-lg p-4 border border-border active:opacity-80">
+              <TouchableOpacity
+                className="rounded-2xl p-4 active:opacity-80"
+                style={{
+                  backgroundColor: colors.surface,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.03,
+                  shadowRadius: 4,
+                  elevation: 1,
+                }}
+              >
                 <Text className="text-sm font-semibold text-foreground">Export Data</Text>
                 <Text className="text-xs text-muted mt-1">Download your study data</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity className="bg-surface rounded-lg p-4 border border-border active:opacity-80">
+              <TouchableOpacity
+                className="rounded-2xl p-4 active:opacity-80"
+                style={{
+                  backgroundColor: colors.surface,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.03,
+                  shadowRadius: 4,
+                  elevation: 1,
+                }}
+              >
                 <Text className="text-sm font-semibold text-foreground">Privacy Policy</Text>
                 <Text className="text-xs text-muted mt-1">Learn how we protect your data</Text>
               </TouchableOpacity>
@@ -147,8 +207,15 @@ export default function SettingsScreen() {
           </View>
 
           {/* Footer */}
-          <View className="bg-secondary/10 rounded-lg p-4 border border-secondary/30 items-center">
-            <Text className="text-xs text-secondary font-semibold mb-2">Falcon Focus by Korede Omotosho</Text>
+          <View
+            className="rounded-2xl p-5 items-center"
+            style={{
+              backgroundColor: colors.secondary + '10',
+              borderWidth: 1,
+              borderColor: colors.accent + '20',
+            }}
+          >
+            <Text className="text-xs font-bold mb-2" style={{ color: colors.accent }}>Falcon Focus by Korede Omotosho</Text>
             <Text className="text-xs text-muted text-center">
               Sharpen Your Vision. Soar to Success.
             </Text>
