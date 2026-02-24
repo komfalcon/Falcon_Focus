@@ -68,12 +68,17 @@ export default function PlannerScreen() {
     );
   };
 
-  // Mock study blocks for selected date
-  const selectedDateBlocks = [
-    { id: '1', title: 'Mathematics Lecture', startTime: '10:00', endTime: '11:30', color: '#0a7ea4' },
-    { id: '2', title: 'Chemistry Study', startTime: '14:00', endTime: '15:30', color: '#22C55E' },
-    { id: '3', title: 'Review Session', startTime: '17:00', endTime: '18:00', color: '#F59E0B' },
-  ];
+  // Filter study blocks for selected date
+  const selectedDayOfWeek = selectedDate.getDay();
+  const selectedDateBlocks = studyBlocks
+    .filter((block) => block.dayOfWeek === selectedDayOfWeek)
+    .map((block) => ({
+      id: block.id,
+      title: block.title,
+      startTime: block.startTime,
+      endTime: block.endTime,
+      color: block.color,
+    }));
 
   return (
     <ScreenContainer className="p-4">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, FlatList, Alert } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { FlockModeService } from '@/lib/flock-mode';
@@ -26,10 +27,11 @@ export default function FlockScreen() {
       return;
     }
     const newFlock = FlockModeService.createFlock('You', flockName);
+    const createdName = newFlock.name;
     setFlock(newFlock);
     setFlockName('');
     setShowCreateModal(false);
-    Alert.alert('Success', `Flock "${flockName}" created! Share code: ${newFlock.inviteCode}`);
+    Alert.alert('Success', `Flock "${createdName}" created! Share code: ${newFlock.inviteCode}`);
   };
 
   const handleJoinFlock = () => {
@@ -107,7 +109,8 @@ export default function FlockScreen() {
           <View className="flex-row items-center justify-between">
             <Text className="text-2xl font-bold text-foreground font-mono">{flock.inviteCode}</Text>
             <Pressable
-              onPress={() => {
+              onPress={async () => {
+                await Clipboard.setStringAsync(flock.inviteCode);
                 Alert.alert('Copied!', `Code ${flock.inviteCode} copied to clipboard`);
               }}
               className="px-3 py-2 rounded-lg"

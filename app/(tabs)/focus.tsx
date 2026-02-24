@@ -33,12 +33,11 @@ export default function FocusScreen() {
           if (timerMode === 'work') {
             setSessionsCompleted((s) => s + 1);
             setTimerMode('break');
-            setTimeRemaining(breakDuration * 60);
+            return breakDuration * 60;
           } else {
             setTimerMode('work');
-            setTimeRemaining(workDuration * 60);
+            return workDuration * 60;
           }
-          return prev - 1;
         }
         return prev - 1;
       });

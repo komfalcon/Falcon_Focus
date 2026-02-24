@@ -2,6 +2,7 @@ import { ScrollView, Text, View, Pressable } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { useStudy } from '@/lib/study-context';
+import { GamificationEngine } from '@/lib/gamification-engine';
 import * as Haptics from 'expo-haptics';
 
 const BADGES = [
@@ -20,6 +21,9 @@ export default function ProgressScreen() {
   const completedTasks = tasks.filter((t) => t.completed).length;
   const completionRate = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
 
+  const altitudePercentage = GamificationEngine.getAltitudePercentage(userProgress.xp);
+  const xpToNextLevel = GamificationEngine.getXpToNextLevel(userProgress.xp);
+
   return (
     <ScreenContainer className="p-4">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
@@ -37,9 +41,9 @@ export default function ProgressScreen() {
               <Text className="text-5xl">🦅</Text>
             </View>
             <View className="bg-white/20 rounded-full h-2 overflow-hidden">
-              <View className="bg-white h-full rounded-full" style={{ width: '65%' }} />
+              <View className="bg-white h-full rounded-full" style={{ width: `${altitudePercentage}%` }} />
             </View>
-            <Text className="text-xs text-white/80 mt-2">6,500 / 10,000 XP to next level</Text>
+            <Text className="text-xs text-white/80 mt-2">{userProgress.xp} / {userProgress.xp + xpToNextLevel} XP to next level</Text>
           </View>
 
           {/* Stats Grid */}

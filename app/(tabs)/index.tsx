@@ -5,6 +5,7 @@ import { useStudy } from '@/lib/study-context';
 import { useState, useCallback, useEffect } from 'react';
 
 import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { GamificationEngine } from '@/lib/gamification-engine';
 import { BurnoutGuardian } from '@/lib/burnout-guardian';
@@ -21,6 +22,7 @@ const DAILY_QUESTS = GamificationEngine.generateDailyQuests();
 
 export default function HomeScreen() {
   const colors = useColors();
+  const router = useRouter();
   const { tasks, userProgress, getAltitudePercentage, getStreakCount, energyLogs } = useStudy();
   const [refreshing, setRefreshing] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
@@ -57,8 +59,6 @@ export default function HomeScreen() {
 
   const altitudePercentage = getAltitudePercentage();
   const streakCount = getStreakCount();
-  const todayStudyHours = 3.4; // Mock data
-  const energyLevel = 4; // Mock data (1-5)
   
   // Gamification metrics
   const altitudeLevel = GamificationEngine.getAltitudeLevel(userProgress.xp);
@@ -150,13 +150,19 @@ export default function HomeScreen() {
           <View className="flex-row gap-3 mb-6">
             <Pressable
               className="flex-1 bg-primary rounded-lg p-3 active:opacity-80"
-              onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push('/focus');
+              }}
             >
               <Text className="text-center font-semibold text-white text-sm">Start Focus</Text>
             </Pressable>
             <Pressable
               className="flex-1 bg-surface rounded-lg p-3 border border-border active:opacity-80"
-              onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push('/planner');
+              }}
             >
               <Text className="text-center font-semibold text-foreground text-sm">Add Task</Text>
             </Pressable>

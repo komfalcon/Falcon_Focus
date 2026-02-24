@@ -253,7 +253,7 @@ export class ProgressAnalyticsService {
       longestStreak: userProgress.longestStreak || 0,
       currentStreak: userProgress.currentStreak || 0,
       badgesEarned: badges.filter((b) => b.unlockedAt && b.unlockedAt >= startDate).length,
-      xpGained: Math.round(Math.random() * 500 + 100), // Placeholder
+      xpGained: Math.round(periodSessions.reduce((sum, s) => sum + Math.floor(s.duration * 1.5), 0)),
       subjectMastery,
       weeklyHeatmap,
       goalForecasts,
@@ -271,13 +271,15 @@ export class ProgressAnalyticsService {
     const insights: string[] = [];
 
     // Weak subject insight
-    const weakSubject = subjectMastery.reduce((prev, current) =>
-      prev.masteryPercentage < current.masteryPercentage ? prev : current
-    );
-    if (weakSubject && weakSubject.masteryPercentage < 50) {
-      insights.push(
-        `Your ${weakSubject.subject} mastery is at ${weakSubject.masteryPercentage}%. Focus on this subject to improve overall performance.`
+    if (subjectMastery.length > 0) {
+      const weakSubject = subjectMastery.reduce((prev, current) =>
+        prev.masteryPercentage < current.masteryPercentage ? prev : current
       );
+      if (weakSubject.masteryPercentage < 50) {
+        insights.push(
+          `Your ${weakSubject.subject} mastery is at ${weakSubject.masteryPercentage}%. Focus on this subject to improve overall performance.`
+        );
+      }
     }
 
     // Streak insight
