@@ -85,18 +85,18 @@ export default function PlannerScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="mb-8">
           {/* Header */}
-          <Text className="text-3xl font-bold text-foreground mb-6">Planner</Text>
+          <Text className="text-3xl font-bold text-foreground mb-6 tracking-tight">Planner</Text>
 
           {/* Calendar Header */}
           <View className="flex-row justify-between items-center mb-4">
-            <Pressable onPress={handlePreviousMonth} className="p-2 active:opacity-80">
-              <Text className="text-2xl">←</Text>
+            <Pressable onPress={handlePreviousMonth} className="p-3 active:opacity-80">
+              <Text className="text-2xl text-muted">←</Text>
             </Pressable>
             <Text className="text-lg font-bold text-foreground">
               {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
             </Text>
-            <Pressable onPress={handleNextMonth} className="p-2 active:opacity-80">
-              <Text className="text-2xl">→</Text>
+            <Pressable onPress={handleNextMonth} className="p-3 active:opacity-80">
+              <Text className="text-2xl text-muted">→</Text>
             </Pressable>
           </View>
 
@@ -104,38 +104,52 @@ export default function PlannerScreen() {
           <View className="flex-row gap-1 mb-2">
             {DAYS_OF_WEEK.map((day) => (
               <View key={day} className="flex-1 items-center py-2">
-                <Text className="text-xs font-semibold text-muted">{day}</Text>
+                <Text className="text-xs font-bold text-muted">{day}</Text>
               </View>
             ))}
           </View>
 
           {/* Calendar Grid */}
-          <View className="bg-surface rounded-lg p-3 border border-border mb-6">
+          <View
+            className="rounded-2xl p-3 mb-6"
+            style={{
+              backgroundColor: colors.surface,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.04,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
+          >
             <View className="flex-row flex-wrap">
               {calendarDays.map((day, index) => (
                 <Pressable
                   key={index}
-                  className={`items-center justify-center rounded-lg mb-1 aspect-square ${
-                    day === null
-                      ? ''
+                  className="items-center justify-center rounded-xl mb-1 aspect-square"
+                  style={{
+                    width: '14.28%',
+                    backgroundColor: day === null
+                      ? 'transparent'
                       : isSelected(day)
-                      ? 'bg-primary'
+                      ? colors.primary
                       : isToday(day)
-                      ? 'bg-secondary/20 border border-secondary'
-                      : 'bg-background'
-                  }`}
+                      ? colors.primary + '18'
+                      : colors.background,
+                    borderWidth: isToday(day) && !isSelected(day) ? 1.5 : 0,
+                    borderColor: colors.primary,
+                  }}
                   onPress={() => day && handleDateSelect(day)}
-                  style={{ width: '14.28%' }}
                 >
                   {day && (
                     <Text
-                      className={`text-sm font-semibold ${
-                        isSelected(day)
-                          ? 'text-white'
+                      className="text-sm font-semibold"
+                      style={{
+                        color: isSelected(day)
+                          ? '#ffffff'
                           : isToday(day)
-                          ? 'text-secondary'
-                          : 'text-foreground'
-                      }`}
+                          ? colors.primary
+                          : colors.foreground,
+                      }}
                     >
                       {day}
                     </Text>
@@ -148,20 +162,31 @@ export default function PlannerScreen() {
           {/* Selected Date Study Blocks */}
           <View className="mb-6">
             <View className="flex-row justify-between items-center mb-3">
-              <Text className="text-sm font-semibold text-foreground">
+              <Text className="text-sm font-bold text-foreground">
                 {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
               </Text>
-              <Pressable className="bg-primary rounded-lg px-3 py-1 active:opacity-80">
-                <Text className="text-xs font-semibold text-white">+ Add</Text>
+              <Pressable
+                className="rounded-xl px-4 py-2 active:opacity-80"
+                style={{ backgroundColor: colors.primary }}
+              >
+                <Text className="text-xs font-bold text-white">+ Add</Text>
               </Pressable>
             </View>
 
-            <View className="gap-2">
+            <View className="gap-3">
               {selectedDateBlocks.length > 0 ? (
                 selectedDateBlocks.map((block) => (
                   <Pressable
                     key={block.id}
-                    className="bg-surface rounded-lg p-3 border border-border active:opacity-80"
+                    className="rounded-2xl p-4 active:opacity-90"
+                    style={{
+                      backgroundColor: colors.surface,
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.03,
+                      shadowRadius: 4,
+                      elevation: 1,
+                    }}
                     onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
                   >
                     <View className="flex-row gap-3 items-start">
@@ -176,28 +201,50 @@ export default function PlannerScreen() {
                         </Text>
                       </View>
                       <Pressable className="p-2 active:opacity-80">
-                        <Text className="text-lg">⋯</Text>
+                        <Text className="text-lg text-muted">⋯</Text>
                       </Pressable>
                     </View>
                   </Pressable>
                 ))
               ) : (
-                <View className="bg-surface rounded-lg p-4 border border-border items-center">
-                  <Text className="text-sm text-muted">No study blocks scheduled</Text>
+                <View
+                  className="rounded-2xl p-6 items-center"
+                  style={{
+                    backgroundColor: colors.surface,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.03,
+                    shadowRadius: 4,
+                    elevation: 1,
+                  }}
+                >
+                  <Text className="text-3xl mb-3">📅</Text>
+                  <Text className="text-sm font-semibold text-foreground mb-1">No study blocks scheduled</Text>
+                  <Text className="text-xs text-muted text-center">Tap "+ Add" to plan your study session</Text>
                 </View>
               )}
             </View>
           </View>
 
           {/* Flight Card Export */}
-          <Pressable className="bg-gradient-to-r from-secondary to-primary rounded-lg p-4 active:opacity-80">
-            <View className="flex-row items-center gap-2">
+          <Pressable
+            className="rounded-2xl p-4 active:opacity-80"
+            style={{
+              backgroundColor: colors.secondary,
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.18,
+              shadowRadius: 10,
+              elevation: 4,
+            }}
+          >
+            <View className="flex-row items-center gap-3">
               <Text className="text-lg">📸</Text>
               <View className="flex-1">
-                <Text className="text-sm font-semibold text-white">Export as Flight Card</Text>
-                <Text className="text-xs text-white/80">Share your schedule with friends</Text>
+                <Text className="text-sm font-bold text-white">Export as Flight Card</Text>
+                <Text className="text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>Share your schedule with friends</Text>
               </View>
-              <Text className="text-lg">→</Text>
+              <Text className="text-lg text-white">→</Text>
             </View>
           </Pressable>
         </View>

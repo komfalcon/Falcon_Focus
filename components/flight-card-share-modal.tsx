@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView, Share, Alert } from 'react-native';
 import { FlightCard, FlightCardsService } from '@/lib/flight-cards';
 import { useColors } from '@/hooks/use-colors';
-import { cn } from '@/lib/utils';
 
 interface FlightCardShareModalProps {
   flightCard: FlightCard;
@@ -49,8 +48,15 @@ export function FlightCardShareModal({
   return (
     <View className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
       <View
-        className="bg-surface rounded-3xl p-6 w-11/12 max-w-md shadow-2xl"
-        style={{ backgroundColor: colors.surface }}
+        className="w-11/12 max-w-md rounded-3xl p-6"
+        style={{
+          backgroundColor: colors.surface,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.15,
+          shadowRadius: 24,
+          elevation: 12,
+        }}
       >
         {/* Header */}
         <View className="mb-6">
@@ -62,15 +68,16 @@ export function FlightCardShareModal({
 
         {/* Flight Card Preview */}
         <View
-          className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-4 mb-6 border border-primary/20"
+          className="rounded-2xl p-5 mb-6"
           style={{
-            backgroundColor: colors.primary + '15',
-            borderColor: colors.primary + '30',
+            backgroundColor: colors.primary + '12',
+            borderWidth: 1,
+            borderColor: colors.primary + '25',
           }}
         >
           <View className="flex-row justify-between items-center mb-3">
             <Text className="text-lg font-bold text-foreground">🦅 {flightCard.altitude}</Text>
-            <Text className="text-sm text-muted">{flightCard.xp} XP</Text>
+            <Text className="text-sm font-semibold" style={{ color: colors.accent }}>{flightCard.xp} XP</Text>
           </View>
           <View className="flex-row justify-between items-center">
             <Text className="text-sm text-foreground">
@@ -82,7 +89,7 @@ export function FlightCardShareModal({
         </View>
 
         {/* Platform Selection */}
-        <Text className="text-sm font-semibold text-foreground mb-3">Share to:</Text>
+        <Text className="text-sm font-bold text-foreground mb-3">Share to:</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -92,24 +99,20 @@ export function FlightCardShareModal({
             <Pressable
               key={platform.id}
               onPress={() => setSelectedPlatform(platform.id as any)}
-              className={cn(
-                'px-4 py-2 rounded-full mr-2 border-2 flex-row items-center gap-2',
-                selectedPlatform === platform.id
-                  ? 'bg-primary border-primary'
-                  : 'bg-background border-border'
-              )}
-              style={
-                selectedPlatform === platform.id
-                  ? { backgroundColor: colors.primary, borderColor: colors.primary }
-                  : { backgroundColor: colors.background, borderColor: colors.border }
-              }
+              className="mr-2 flex-row items-center gap-2 active:opacity-90"
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 16,
+                borderWidth: 2,
+                backgroundColor: selectedPlatform === platform.id ? colors.primary : colors.background,
+                borderColor: selectedPlatform === platform.id ? colors.primary : colors.border,
+              }}
             >
               <Text className="text-lg">{platform.icon}</Text>
               <Text
-                className={cn(
-                  'text-xs font-semibold',
-                  selectedPlatform === platform.id ? 'text-background' : 'text-foreground'
-                )}
+                className="text-xs font-bold"
+                style={{ color: selectedPlatform === platform.id ? '#ffffff' : colors.foreground }}
               >
                 {platform.name}
               </Text>
@@ -119,8 +122,12 @@ export function FlightCardShareModal({
 
         {/* Share Message Preview */}
         <View
-          className="bg-background rounded-lg p-3 mb-6 border border-border"
-          style={{ backgroundColor: colors.background, borderColor: colors.border }}
+          className="rounded-2xl p-4 mb-6"
+          style={{
+            backgroundColor: colors.background,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}
         >
           <Text className="text-xs text-muted mb-2">Message preview:</Text>
           <Text className="text-sm text-foreground leading-relaxed">{shareMessage}</Text>
@@ -130,17 +137,28 @@ export function FlightCardShareModal({
         <View className="flex-row gap-3">
           <Pressable
             onPress={onClose}
-            className="flex-1 py-3 rounded-lg border border-border items-center"
-            style={{ borderColor: colors.border }}
+            className="flex-1 py-4 rounded-2xl items-center active:opacity-80"
+            style={{
+              backgroundColor: colors.surface,
+              borderWidth: 1.5,
+              borderColor: colors.border,
+            }}
           >
-            <Text className="font-semibold text-foreground">Cancel</Text>
+            <Text className="font-bold text-foreground">Cancel</Text>
           </Pressable>
           <Pressable
             onPress={handleShare}
-            className="flex-1 py-3 rounded-lg items-center"
-            style={{ backgroundColor: colors.primary }}
+            className="flex-1 py-4 rounded-2xl items-center active:opacity-80"
+            style={{
+              backgroundColor: colors.primary,
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 4,
+            }}
           >
-            <Text className="font-semibold text-background">Share Flight 🚀</Text>
+            <Text className="font-bold text-white">Share Flight 🚀</Text>
           </Pressable>
         </View>
 

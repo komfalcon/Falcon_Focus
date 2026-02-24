@@ -13,20 +13,26 @@ export default function LearnScreen() {
         <View className="mb-8">
           {/* Header */}
           <View className="mb-6">
-            <Text className="text-3xl font-bold text-foreground mb-1">Learn</Text>
+            <Text className="text-3xl font-bold text-foreground mb-1 tracking-tight">Learn</Text>
             <Text className="text-xs text-muted">Notes & Flashcards</Text>
           </View>
 
           {/* Tab Toggle */}
           <View className="flex-row gap-2 mb-6">
             <Pressable
-              className={`flex-1 rounded-lg p-3 active:opacity-80 ${
-                activeTab === 'notes' ? 'bg-primary' : 'bg-surface border border-border'
-              }`}
+              className="flex-1 rounded-2xl py-3 active:opacity-90"
+              style={{
+                backgroundColor: activeTab === 'notes' ? colors.primary : colors.surface,
+                shadowColor: activeTab === 'notes' ? colors.primary : '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: activeTab === 'notes' ? 0.25 : 0.04,
+                shadowRadius: 6,
+                elevation: activeTab === 'notes' ? 3 : 1,
+              }}
               onPress={() => setActiveTab('notes')}
             >
               <Text
-                className={`text-sm font-semibold text-center ${
+                className={`text-sm font-bold text-center ${
                   activeTab === 'notes' ? 'text-white' : 'text-foreground'
                 }`}
               >
@@ -34,13 +40,19 @@ export default function LearnScreen() {
               </Text>
             </Pressable>
             <Pressable
-              className={`flex-1 rounded-lg p-3 active:opacity-80 ${
-                activeTab === 'flashcards' ? 'bg-primary' : 'bg-surface border border-border'
-              }`}
+              className="flex-1 rounded-2xl py-3 active:opacity-90"
+              style={{
+                backgroundColor: activeTab === 'flashcards' ? colors.primary : colors.surface,
+                shadowColor: activeTab === 'flashcards' ? colors.primary : '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: activeTab === 'flashcards' ? 0.25 : 0.04,
+                shadowRadius: 6,
+                elevation: activeTab === 'flashcards' ? 3 : 1,
+              }}
               onPress={() => setActiveTab('flashcards')}
             >
               <Text
-                className={`text-sm font-semibold text-center ${
+                className={`text-sm font-bold text-center ${
                   activeTab === 'flashcards' ? 'text-white' : 'text-foreground'
                 }`}
               >
@@ -53,17 +65,35 @@ export default function LearnScreen() {
           {activeTab === 'notes' && (
             <View>
               <Pressable
-                className="bg-primary rounded-lg p-4 mb-6 active:opacity-80"
+                className="rounded-2xl py-4 mb-6 active:opacity-80"
+                style={{
+                  backgroundColor: colors.primary,
+                  shadowColor: colors.primary,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
                 onPress={() => {}}
               >
-                <Text className="text-center font-semibold text-white">+ New Note</Text>
+                <Text className="text-center font-bold text-white text-base">+ New Note</Text>
               </Pressable>
 
               <View className="gap-3">
-                <View className="bg-surface rounded-lg p-4 border border-border">
+                <View
+                  className="rounded-2xl p-4"
+                  style={{
+                    backgroundColor: colors.surface,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.03,
+                    shadowRadius: 4,
+                    elevation: 1,
+                  }}
+                >
                   <View className="flex-row justify-between items-start mb-2">
                     <View className="flex-1">
-                      <Text className="text-sm font-semibold text-foreground">Calculus Derivatives</Text>
+                      <Text className="text-sm font-bold text-foreground">Calculus Derivatives</Text>
                       <Text className="text-xs text-muted mt-1">Mathematics</Text>
                     </View>
                     <Text className="text-xs text-muted">Today</Text>
@@ -72,19 +102,29 @@ export default function LearnScreen() {
                     The derivative of a function measures how the function changes as its input changes...
                   </Text>
                   <View className="flex-row gap-2 mt-3">
-                    <View className="bg-primary/10 rounded px-2 py-1">
-                      <Text className="text-xs text-primary font-semibold">Rich Text</Text>
+                    <View className="rounded-lg px-2.5 py-1" style={{ backgroundColor: colors.primary + '14' }}>
+                      <Text className="text-xs font-bold" style={{ color: colors.primary }}>Rich Text</Text>
                     </View>
-                    <View className="bg-primary/10 rounded px-2 py-1">
-                      <Text className="text-xs text-primary font-semibold">Images</Text>
+                    <View className="rounded-lg px-2.5 py-1" style={{ backgroundColor: colors.primary + '14' }}>
+                      <Text className="text-xs font-bold" style={{ color: colors.primary }}>Images</Text>
                     </View>
                   </View>
                 </View>
 
-                <View className="bg-surface rounded-lg p-4 border border-border">
+                <View
+                  className="rounded-2xl p-4"
+                  style={{
+                    backgroundColor: colors.surface,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.03,
+                    shadowRadius: 4,
+                    elevation: 1,
+                  }}
+                >
                   <View className="flex-row justify-between items-start mb-2">
                     <View className="flex-1">
-                      <Text className="text-sm font-semibold text-foreground">Biology Photosynthesis</Text>
+                      <Text className="text-sm font-bold text-foreground">Biology Photosynthesis</Text>
                       <Text className="text-xs text-muted mt-1">Biology</Text>
                     </View>
                     <Text className="text-xs text-muted">Yesterday</Text>
@@ -101,45 +141,79 @@ export default function LearnScreen() {
           {activeTab === 'flashcards' && (
             <View>
               <Pressable
-                className="bg-primary rounded-lg p-4 mb-6 active:opacity-80"
+                className="rounded-2xl py-4 mb-6 active:opacity-80"
+                style={{
+                  backgroundColor: colors.primary,
+                  shadowColor: colors.primary,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
                 onPress={() => {}}
               >
-                <Text className="text-center font-semibold text-white">+ New Deck</Text>
+                <Text className="text-center font-bold text-white text-base">+ New Deck</Text>
               </Pressable>
 
               <View className="gap-3">
-                <View className="bg-gradient-to-r from-primary to-accent rounded-lg p-4 border border-primary">
+                <View
+                  className="rounded-2xl p-4"
+                  style={{
+                    backgroundColor: colors.secondary,
+                    shadowColor: colors.primary,
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.12,
+                    shadowRadius: 8,
+                    elevation: 3,
+                  }}
+                >
                   <View className="flex-row justify-between items-start mb-2">
                     <View className="flex-1">
-                      <Text className="text-sm font-semibold text-white">Spanish Vocabulary</Text>
-                      <Text className="text-xs text-white/70 mt-1">Languages</Text>
+                      <Text className="text-sm font-bold text-white">Spanish Vocabulary</Text>
+                      <Text className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>Languages</Text>
                     </View>
-                    <Text className="text-xs text-white/70">24 cards</Text>
+                    <Text className="text-xs" style={{ color: 'rgba(255,255,255,0.65)' }}>24 cards</Text>
                   </View>
                   <View className="flex-row gap-2 mt-3">
-                    <Pressable className="flex-1 bg-white/20 rounded p-2 active:opacity-80">
-                      <Text className="text-xs font-semibold text-white text-center">Study</Text>
+                    <Pressable className="flex-1 rounded-xl p-2.5 active:opacity-80" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                      <Text className="text-xs font-bold text-white text-center">Study</Text>
                     </Pressable>
-                    <Pressable className="flex-1 bg-white/20 rounded p-2 active:opacity-80">
-                      <Text className="text-xs font-semibold text-white text-center">Edit</Text>
+                    <Pressable className="flex-1 rounded-xl p-2.5 active:opacity-80" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                      <Text className="text-xs font-bold text-white text-center">Edit</Text>
                     </Pressable>
                   </View>
                 </View>
 
-                <View className="bg-surface rounded-lg p-4 border border-border">
+                <View
+                  className="rounded-2xl p-4"
+                  style={{
+                    backgroundColor: colors.surface,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.03,
+                    shadowRadius: 4,
+                    elevation: 1,
+                  }}
+                >
                   <View className="flex-row justify-between items-start mb-2">
                     <View className="flex-1">
-                      <Text className="text-sm font-semibold text-foreground">Chemistry Elements</Text>
+                      <Text className="text-sm font-bold text-foreground">Chemistry Elements</Text>
                       <Text className="text-xs text-muted mt-1">Science</Text>
                     </View>
                     <Text className="text-xs text-muted">18 cards</Text>
                   </View>
                   <View className="flex-row gap-2 mt-3">
-                    <Pressable className="flex-1 bg-primary/10 rounded p-2 active:opacity-80 border border-primary">
-                      <Text className="text-xs font-semibold text-primary text-center">Study</Text>
+                    <Pressable
+                      className="flex-1 rounded-xl p-2.5 active:opacity-80"
+                      style={{ backgroundColor: colors.primary + '14', borderWidth: 1, borderColor: colors.primary + '40' }}
+                    >
+                      <Text className="text-xs font-bold text-center" style={{ color: colors.primary }}>Study</Text>
                     </Pressable>
-                    <Pressable className="flex-1 bg-border rounded p-2 active:opacity-80">
-                      <Text className="text-xs font-semibold text-muted text-center">Edit</Text>
+                    <Pressable
+                      className="flex-1 rounded-xl p-2.5 active:opacity-80"
+                      style={{ backgroundColor: colors.border + '40' }}
+                    >
+                      <Text className="text-xs font-bold text-muted text-center">Edit</Text>
                     </Pressable>
                   </View>
                 </View>
