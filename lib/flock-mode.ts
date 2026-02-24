@@ -33,6 +33,17 @@ export interface FlockCheckIn {
   goalsMet: number;
 }
 
+const DEFAULT_MEMBER: FlockMember = {
+  id: '',
+  name: 'No members',
+  joinCode: '',
+  joinedAt: 0,
+  altitude: 'Fledgling',
+  streak: 0,
+  xp: 0,
+  lastUpdate: 0,
+};
+
 export class FlockModeService {
   static createFlock(ownerName: string, flockName: string, description?: string): Flock {
     const inviteCode = this.generateInviteCode();
@@ -153,7 +164,7 @@ export class FlockModeService {
       ? flock.members.reduce((prev, current) =>
           prev.xp > current.xp ? prev : current
         )
-      : { id: '', name: 'No members', joinCode: '', joinedAt: 0, altitude: 'Fledgling', streak: 0, xp: 0, lastUpdate: 0 };
+      : DEFAULT_MEMBER;
 
     return {
       totalMembers,
