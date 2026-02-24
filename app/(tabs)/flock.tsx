@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, FlatList, Alert } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { FlockModeService } from '@/lib/flock-mode';
-import { cn } from '@/lib/utils';
 
 export default function FlockScreen() {
   const colors = useColors();

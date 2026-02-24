@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, Pressable, Switch, Animated } from 'react-native';
+import { ScrollView, Text, View, Pressable, Switch } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { useStudy } from '@/lib/study-context';
