@@ -4,16 +4,26 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useColors } from '@/hooks/use-colors';
 import { useState, useEffect } from 'react';
 import { useThemeContext } from '@/lib/theme-provider';
+import { PushNotificationsService } from '@/lib/push-notifications-service';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
   const colors = useColors();
   const { setColorScheme } = useThemeContext();
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === 'dark');
+  const [pushEnabled, setPushEnabled] = useState(true);
+  const [alarmsEnabled, setAlarmsEnabled] = useState(true);
 
   useEffect(() => {
     setIsDarkMode(colorScheme === 'dark');
   }, [colorScheme]);
+
+  useEffect(() => {
+    PushNotificationsService.loadPreferences().then((prefs) => {
+      setPushEnabled(prefs.enabled);
+      setAlarmsEnabled(prefs.sessionReminders);
+    });
+  }, []);
 
   const handleThemeToggle = () => {
     const newScheme = isDarkMode ? 'light' : 'dark';
@@ -58,10 +68,14 @@ export default function SettingsScreen() {
                   <Text className="text-xs text-muted mt-1">Session reminders & achievements</Text>
                 </View>
                 <Switch
-                  value={true}
-                  onValueChange={() => {}}
+                  value={pushEnabled}
+                  onValueChange={async (value) => {
+                    setPushEnabled(value);
+                    const prefs = await PushNotificationsService.loadPreferences();
+                    await PushNotificationsService.savePreferences({ ...prefs, enabled: value });
+                  }}
                   trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={colors.primary}
+                  thumbColor={pushEnabled ? colors.primary : colors.muted}
                 />
               </View>
 
@@ -71,10 +85,14 @@ export default function SettingsScreen() {
                   <Text className="text-xs text-muted mt-1">Study schedule alerts</Text>
                 </View>
                 <Switch
-                  value={true}
-                  onValueChange={() => {}}
+                  value={alarmsEnabled}
+                  onValueChange={async (value) => {
+                    setAlarmsEnabled(value);
+                    const prefs = await PushNotificationsService.loadPreferences();
+                    await PushNotificationsService.savePreferences({ ...prefs, sessionReminders: value });
+                  }}
                   trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={colors.primary}
+                  thumbColor={alarmsEnabled ? colors.primary : colors.muted}
                 />
               </View>
             </View>

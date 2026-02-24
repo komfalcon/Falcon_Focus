@@ -122,7 +122,7 @@ export class SpacedRepetitionEngine {
       reviewedCards,
       dueCards,
       newCards,
-      reviewProgress: Math.round((reviewedCards / totalCards) * 100),
+      reviewProgress: totalCards > 0 ? Math.round((reviewedCards / totalCards) * 100) : 0,
       averageEaseFactor: Math.round(averageEaseFactor * 100) / 100,
     };
   }

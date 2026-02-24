@@ -218,13 +218,16 @@ export class SocialLeaderboardsService {
    * Get top flyers leaderboard (simulated)
    */
   static getTopFlyersLeaderboard(period: 'week' | 'month' = 'week'): TopFlyersLeaderboard {
-    // Simulate weekly variations
-    const entries = SIMULATED_TOP_FLYERS.map((entry) => ({
-      ...entry,
-      // Add slight variations for weekly updates
-      xp: entry.xp + (Math.random() * 500 - 250),
-      streak: Math.max(0, entry.streak + (Math.random() > 0.5 ? 1 : -1)),
-    })).sort((a, b) => b.xp - a.xp);
+    // Use a seed based on date so rankings are stable within the same day
+    const daySeed = Math.floor(Date.now() / (24 * 60 * 60 * 1000));
+    const entries = SIMULATED_TOP_FLYERS.map((entry, index) => {
+      const variation = ((daySeed + index) % 500) - 250;
+      return {
+        ...entry,
+        xp: entry.xp + variation,
+        streak: Math.max(0, entry.streak + ((daySeed + index) % 2 === 0 ? 1 : -1)),
+      };
+    }).sort((a, b) => b.xp - a.xp);
 
     return {
       entries: entries.slice(0, 20),

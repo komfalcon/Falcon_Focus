@@ -139,7 +139,9 @@ export class FlockModeService {
 
   static getFlockStats(flock: Flock) {
     const totalMembers = flock.members.length;
-    const avgStreak = flock.members.reduce((sum, m) => sum + m.streak, 0) / totalMembers;
+    const avgStreak = totalMembers > 0
+      ? flock.members.reduce((sum, m) => sum + m.streak, 0) / totalMembers
+      : 0;
     const totalXP = flock.members.reduce((sum, m) => sum + m.xp, 0);
     const altitudes = {
       Fledgling: flock.members.filter((m) => m.altitude === 'Fledgling').length,
@@ -147,14 +149,18 @@ export class FlockModeService {
       Apex: flock.members.filter((m) => m.altitude === 'Apex').length,
     };
 
+    const topMember = flock.members.length > 0
+      ? flock.members.reduce((prev, current) =>
+          prev.xp > current.xp ? prev : current
+        )
+      : { id: '', name: 'No members', joinCode: '', joinedAt: 0, altitude: 'Fledgling', streak: 0, xp: 0, lastUpdate: 0 };
+
     return {
       totalMembers,
       avgStreak: Math.round(avgStreak * 10) / 10,
       totalXP,
       altitudes,
-      topMember: flock.members.reduce((prev, current) =>
-        prev.xp > current.xp ? prev : current
-      ),
+      topMember,
     };
   }
 
