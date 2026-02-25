@@ -35,11 +35,11 @@ export default function SettingsScreen() {
     <ScreenContainer className="p-4">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="mb-8">
-          <Text className="text-3xl font-bold text-foreground mb-6 tracking-tight">Settings</Text>
+          <Text className="text-3xl font-bold text-foreground dark:text-foreground-dark mb-6 tracking-tight">Settings</Text>
 
           {/* Appearance */}
           <View className="mb-8">
-            <Text className="text-xs font-bold text-muted uppercase mb-4 tracking-wider">Appearance</Text>
+            <Text className="text-xs font-bold text-muted dark:text-muted-dark uppercase mb-4 tracking-wider">Appearance</Text>
 
             <View
               className="rounded-2xl p-4 flex-row justify-between items-center"
@@ -53,8 +53,8 @@ export default function SettingsScreen() {
               }}
             >
               <View className="flex-1">
-                <Text className="text-base font-bold text-foreground">Dark Mode</Text>
-                <Text className="text-xs text-muted mt-1">
+                <Text className="text-base font-bold text-foreground dark:text-foreground-dark">Dark Mode</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark mt-1">
                   {isDarkMode ? 'Enabled' : 'Disabled'}
                 </Text>
               </View>
@@ -69,7 +69,7 @@ export default function SettingsScreen() {
 
           {/* Notifications */}
           <View className="mb-8">
-            <Text className="text-xs font-bold text-muted uppercase mb-4 tracking-wider">Notifications</Text>
+            <Text className="text-xs font-bold text-muted dark:text-muted-dark uppercase mb-4 tracking-wider">Notifications</Text>
 
             <View className="gap-3">
               <View
@@ -84,8 +84,8 @@ export default function SettingsScreen() {
                 }}
               >
                 <View className="flex-1">
-                  <Text className="text-sm font-semibold text-foreground">Push Notifications</Text>
-                  <Text className="text-xs text-muted mt-1">Session reminders & achievements</Text>
+                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Push Notifications</Text>
+                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">Session reminders & achievements</Text>
                 </View>
                 <Switch
                   value={pushEnabled}
@@ -111,8 +111,8 @@ export default function SettingsScreen() {
                 }}
               >
                 <View className="flex-1">
-                  <Text className="text-sm font-semibold text-foreground">Alarms</Text>
-                  <Text className="text-xs text-muted mt-1">Study schedule alerts</Text>
+                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Alarms</Text>
+                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">Study schedule alerts</Text>
                 </View>
                 <Switch
                   value={alarmsEnabled}
@@ -130,7 +130,7 @@ export default function SettingsScreen() {
 
           {/* About */}
           <View className="mb-8">
-            <Text className="text-xs font-bold text-muted uppercase mb-4 tracking-wider">About</Text>
+            <Text className="text-xs font-bold text-muted dark:text-muted-dark uppercase mb-4 tracking-wider">About</Text>
 
             <View
               className="rounded-2xl p-5"
@@ -144,25 +144,25 @@ export default function SettingsScreen() {
               }}
             >
               <View className="mb-4">
-                <Text className="text-base font-bold text-foreground">Falcon Focus</Text>
-                <Text className="text-xs text-muted mt-1">Version 1.0.0</Text>
+                <Text className="text-base font-bold text-foreground dark:text-foreground-dark">Falcon Focus</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark mt-1">Version 1.0.0</Text>
               </View>
 
               <View className="border-t pt-4 mb-4" style={{ borderTopColor: colors.border }}>
                 <Text className="text-xs font-bold mb-2" style={{ color: colors.accent }}>Tagline</Text>
-                <Text className="text-sm text-foreground italic">
+                <Text className="text-sm text-foreground dark:text-foreground-dark italic">
                   "Sharpen Your Vision. Soar to Success."
                 </Text>
               </View>
 
               <View className="border-t pt-4 mb-4" style={{ borderTopColor: colors.border }}>
                 <Text className="text-xs font-bold mb-2" style={{ color: colors.accent }}>Founder</Text>
-                <Text className="text-sm font-bold text-foreground">Korede Omotosho</Text>
+                <Text className="text-sm font-bold text-foreground dark:text-foreground-dark">Korede Omotosho</Text>
               </View>
 
               <View className="border-t pt-4" style={{ borderTopColor: colors.border }}>
                 <Text className="text-xs font-bold mb-2" style={{ color: colors.accent }}>Vision</Text>
-                <Text className="text-sm text-foreground leading-relaxed">
+                <Text className="text-sm text-foreground dark:text-foreground-dark leading-relaxed">
                   Born from one student's spark to help thousands soar. Falcon Focus is designed to be the ultimate study companion for students 13-25, combining powerful learning tools with immersive gamification to make studying engaging, effective, and inspiring.
                 </Text>
               </View>
@@ -171,7 +171,7 @@ export default function SettingsScreen() {
 
           {/* Data & Privacy */}
           <View className="mb-8">
-            <Text className="text-xs font-bold text-muted uppercase mb-4 tracking-wider">Data & Privacy</Text>
+            <Text className="text-xs font-bold text-muted dark:text-muted-dark uppercase mb-4 tracking-wider">Data & Privacy</Text>
 
             <View className="gap-3">
               <TouchableOpacity
@@ -185,8 +185,8 @@ export default function SettingsScreen() {
                   elevation: 1,
                 }}
               >
-                <Text className="text-sm font-semibold text-foreground">Export Data</Text>
-                <Text className="text-xs text-muted mt-1">Download your study data</Text>
+                <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Export Data</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark mt-1">Download your study data</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -200,8 +200,8 @@ export default function SettingsScreen() {
                   elevation: 1,
                 }}
               >
-                <Text className="text-sm font-semibold text-foreground">Privacy Policy</Text>
-                <Text className="text-xs text-muted mt-1">Learn how we protect your data</Text>
+                <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Privacy Policy</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark mt-1">Learn how we protect your data</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -216,7 +216,7 @@ export default function SettingsScreen() {
             }}
           >
             <Text className="text-xs font-bold mb-2" style={{ color: colors.accent }}>Falcon Focus by Korede Omotosho</Text>
-            <Text className="text-xs text-muted text-center">
+            <Text className="text-xs text-muted dark:text-muted-dark text-center">
               Sharpen Your Vision. Soar to Success.
             </Text>
           </View>

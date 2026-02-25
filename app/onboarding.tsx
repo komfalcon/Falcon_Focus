@@ -69,7 +69,7 @@ export default function OnboardingScreen() {
           {/* Header with Logo */}
           <View className="items-center mb-8">
             <Animated.Text style={{ fontSize: 56, marginBottom: 16, transform: [{ scale: breatheAnim }] }}>🦅</Animated.Text>
-            <Text className="text-3xl font-bold text-foreground mb-2 tracking-tight">Falcon Focus</Text>
+            <Text className="text-3xl font-bold text-foreground dark:text-foreground-dark mb-2 tracking-tight">Falcon Focus</Text>
             <Text className="text-sm font-bold" style={{ color: colors.accent }}>Sharpen Your Vision. Soar to Success.</Text>
           </View>
 
@@ -87,8 +87,8 @@ export default function OnboardingScreen() {
           {/* Step 1: Subjects */}
           {step === 1 && (
             <View>
-              <Text className="text-2xl font-bold text-foreground mb-2">What do you study?</Text>
-              <Text className="text-sm text-muted mb-6">Select your main subjects</Text>
+              <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark mb-2">What do you study?</Text>
+              <Text className="text-sm text-muted dark:text-muted-dark mb-6">Select your main subjects</Text>
 
               <View className="flex-row flex-wrap gap-3 mb-8">
                 {SUBJECTS.map((subject) => (
@@ -109,7 +109,7 @@ export default function OnboardingScreen() {
                   >
                     <Text
                       className={`text-sm font-bold ${
-                        selectedSubjects.includes(subject) ? 'text-white' : 'text-foreground'
+                        selectedSubjects.includes(subject) ? 'text-white' : 'text-foreground dark:text-foreground-dark'
                       }`}
                     >
                       {subject}
@@ -123,8 +123,8 @@ export default function OnboardingScreen() {
           {/* Step 2: Learning Style */}
           {step === 2 && (
             <View>
-              <Text className="text-2xl font-bold text-foreground mb-2">How do you learn best?</Text>
-              <Text className="text-sm text-muted mb-6">Select your learning style</Text>
+              <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark mb-2">How do you learn best?</Text>
+              <Text className="text-sm text-muted dark:text-muted-dark mb-6">Select your learning style</Text>
 
               <View className="gap-3 mb-8">
                 {LEARNING_STYLES.map((style) => (
@@ -145,7 +145,7 @@ export default function OnboardingScreen() {
                   >
                     <Text
                       className={`text-base font-bold ${
-                        learningStyle === style ? 'text-white' : 'text-foreground'
+                        learningStyle === style ? 'text-white' : 'text-foreground dark:text-foreground-dark'
                       }`}
                     >
                       {style}
@@ -159,8 +159,8 @@ export default function OnboardingScreen() {
           {/* Step 3: Goals */}
           {step === 3 && (
             <View>
-              <Text className="text-2xl font-bold text-foreground mb-2">What are your learning goals?</Text>
-              <Text className="text-sm text-muted mb-6">Enter your goals (comma-separated)</Text>
+              <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark mb-2">What are your learning goals?</Text>
+              <Text className="text-sm text-muted dark:text-muted-dark mb-6">Enter your goals (comma-separated)</Text>
 
               <View
                 className="rounded-2xl p-5 mb-8"
@@ -173,7 +173,7 @@ export default function OnboardingScreen() {
                   elevation: 1,
                 }}
               >
-                <Text className="text-sm text-foreground leading-relaxed">
+                <Text className="text-sm text-foreground dark:text-foreground-dark leading-relaxed">
                   Example: Pass Math exam, Learn Spanish, Complete Python course
                 </Text>
               </View>
@@ -183,7 +183,7 @@ export default function OnboardingScreen() {
           {/* Step 4: Founder Story */}
           {step === 4 && (
             <View>
-              <Text className="text-2xl font-bold text-foreground mb-4">Meet Your Falcon Coach</Text>
+              <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark mb-4">Meet Your Falcon Coach</Text>
 
               <View
                 className="rounded-2xl p-6 mb-6 overflow-hidden"
@@ -215,8 +215,8 @@ export default function OnboardingScreen() {
                 }}
               >
                 <Text className="text-xs font-bold mb-2" style={{ color: colors.accent }}>FOUNDER</Text>
-                <Text className="text-base font-bold text-foreground mb-3">Korede Omotosho</Text>
-                <Text className="text-sm text-foreground leading-relaxed">
+                <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Korede Omotosho</Text>
+                <Text className="text-sm text-foreground dark:text-foreground-dark leading-relaxed">
                   Falcon Focus is designed to be the ultimate study companion for students 13-25, combining powerful learning tools with immersive gamification to make studying engaging, effective, and inspiring.
                 </Text>
               </View>
@@ -230,7 +230,7 @@ export default function OnboardingScreen() {
                 }}
               >
                 <Text className="text-sm font-bold mb-2" style={{ color: colors.accent }}>🎯 Your Journey Starts Here</Text>
-                <Text className="text-sm text-foreground leading-relaxed">
+                <Text className="text-sm text-foreground dark:text-foreground-dark leading-relaxed">
                   You're about to embark on an epic flight to success. Sharpen your vision, earn feathers, climb the Falcon's Ascent, and soar to your goals. Let's begin!
                 </Text>
               </View>
@@ -252,7 +252,7 @@ export default function OnboardingScreen() {
                 }}
                 onPress={handleBack}
               >
-                <Text className="text-center font-bold text-foreground text-base">Back</Text>
+                <Text className="text-center font-bold text-foreground dark:text-foreground-dark text-base">Back</Text>
               </Pressable>
             )}
             <Pressable

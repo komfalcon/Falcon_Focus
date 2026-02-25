@@ -85,18 +85,18 @@ export default function PlannerScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="mb-8">
           {/* Header */}
-          <Text className="text-3xl font-bold text-foreground mb-6 tracking-tight">Planner</Text>
+          <Text className="text-3xl font-bold text-foreground dark:text-foreground-dark mb-6 tracking-tight">Planner</Text>
 
           {/* Calendar Header */}
           <View className="flex-row justify-between items-center mb-4">
             <Pressable onPress={handlePreviousMonth} className="p-3 active:opacity-80">
-              <Text className="text-2xl text-muted">←</Text>
+              <Text className="text-2xl text-muted dark:text-muted-dark">←</Text>
             </Pressable>
-            <Text className="text-lg font-bold text-foreground">
+            <Text className="text-lg font-bold text-foreground dark:text-foreground-dark">
               {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
             </Text>
             <Pressable onPress={handleNextMonth} className="p-3 active:opacity-80">
-              <Text className="text-2xl text-muted">→</Text>
+              <Text className="text-2xl text-muted dark:text-muted-dark">→</Text>
             </Pressable>
           </View>
 
@@ -104,7 +104,7 @@ export default function PlannerScreen() {
           <View className="flex-row gap-1 mb-2">
             {DAYS_OF_WEEK.map((day) => (
               <View key={day} className="flex-1 items-center py-2">
-                <Text className="text-xs font-bold text-muted">{day}</Text>
+                <Text className="text-xs font-bold text-muted dark:text-muted-dark">{day}</Text>
               </View>
             ))}
           </View>
@@ -162,7 +162,7 @@ export default function PlannerScreen() {
           {/* Selected Date Study Blocks */}
           <View className="mb-6">
             <View className="flex-row justify-between items-center mb-3">
-              <Text className="text-sm font-bold text-foreground">
+              <Text className="text-sm font-bold text-foreground dark:text-foreground-dark">
                 {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
               </Text>
               <Pressable
@@ -195,13 +195,13 @@ export default function PlannerScreen() {
                         style={{ backgroundColor: block.color }}
                       />
                       <View className="flex-1">
-                        <Text className="text-sm font-semibold text-foreground">{block.title}</Text>
-                        <Text className="text-xs text-muted mt-1">
+                        <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">{block.title}</Text>
+                        <Text className="text-xs text-muted dark:text-muted-dark mt-1">
                           {block.startTime} - {block.endTime}
                         </Text>
                       </View>
                       <Pressable className="p-2 active:opacity-80">
-                        <Text className="text-lg text-muted">⋯</Text>
+                        <Text className="text-lg text-muted dark:text-muted-dark">⋯</Text>
                       </Pressable>
                     </View>
                   </Pressable>
@@ -219,8 +219,8 @@ export default function PlannerScreen() {
                   }}
                 >
                   <Text className="text-3xl mb-3">📅</Text>
-                  <Text className="text-sm font-semibold text-foreground mb-1">No study blocks scheduled</Text>
-                  <Text className="text-xs text-muted text-center">Tap "+ Add" to plan your study session</Text>
+                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark mb-1">No study blocks scheduled</Text>
+                  <Text className="text-xs text-muted dark:text-muted-dark text-center">Tap "+ Add" to plan your study session</Text>
                 </View>
               )}
             </View>
