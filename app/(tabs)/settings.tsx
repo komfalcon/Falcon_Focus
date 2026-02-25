@@ -5,6 +5,7 @@ import { useColors } from '@/hooks/use-colors';
 import { useState, useEffect } from 'react';
 import { useThemeContext } from '@/lib/theme-provider';
 import { PushNotificationsService } from '@/lib/push-notifications-service';
+import * as Linking from 'expo-linking';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
@@ -203,6 +204,41 @@ export default function SettingsScreen() {
                 <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Privacy Policy</Text>
                 <Text className="text-xs text-muted dark:text-muted-dark mt-1">Learn how we protect your data</Text>
               </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Feedback & Support */}
+          <View className="mb-8">
+            <Text className="text-xs font-bold text-muted dark:text-muted-dark uppercase mb-4 tracking-wider">Feedback & Support</Text>
+
+            <View
+              className="rounded-2xl p-5"
+              style={{
+                backgroundColor: colors.surface,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.04,
+                shadowRadius: 8,
+                elevation: 2,
+              }}
+            >
+              <View className="mb-4">
+                <Text className="text-xs font-bold mb-2" style={{ color: colors.accent }}>Contact</Text>
+                <Text className="text-sm text-foreground dark:text-foreground-dark">omotoshokorede1025@gmail.com</Text>
+                <Text className="text-sm text-foreground dark:text-foreground-dark mt-1">+2349113683395</Text>
+              </View>
+
+              <View className="border-t pt-4" style={{ borderTopColor: colors.border }}>
+                <TouchableOpacity
+                  className="rounded-xl py-3 px-4 active:opacity-80 items-center"
+                  style={{ backgroundColor: colors.primary }}
+                  onPress={() => {
+                    Linking.openURL('mailto:omotoshokorede1025@gmail.com?subject=Falcon Focus Feedback');
+                  }}
+                >
+                  <Text className="text-sm font-bold text-white">Send Feedback</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
 
