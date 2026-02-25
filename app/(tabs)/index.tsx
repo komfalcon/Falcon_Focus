@@ -94,8 +94,8 @@ export default function HomeScreen() {
         <View className="mb-8">
           {/* Header */}
           <View className="mb-6">
-            <Text className="text-3xl font-bold text-foreground tracking-tight">Falcon Focus</Text>
-            <Text className="text-xs text-muted mt-1">By Korede Omotosho</Text>
+            <Text className="text-3xl font-bold text-foreground dark:text-foreground-dark tracking-tight">Falcon Focus</Text>
+            <Text className="text-xs text-muted dark:text-muted-dark mt-1">By Korede Omotosho</Text>
           </View>
 
           {/* Altitude Meter - Gamification */}
@@ -140,12 +140,12 @@ export default function HomeScreen() {
                 elevation: 2,
               }}
             >
-              <Text className="text-xs text-muted font-semibold mb-2">STREAK</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">STREAK</Text>
               <View className="flex-row items-baseline gap-1">
-                <Text className="text-2xl font-bold text-foreground">{streakCount}</Text>
+                <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{streakCount}</Text>
                 <Text className="text-lg">🔥</Text>
               </View>
-              <Text className="text-xs text-muted mt-1">days</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark mt-1">days</Text>
             </View>
 
             {/* Feathers/XP */}
@@ -160,12 +160,12 @@ export default function HomeScreen() {
                 elevation: 2,
               }}
             >
-              <Text className="text-xs text-muted font-semibold mb-2">FEATHERS</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">FEATHERS</Text>
               <View className="flex-row items-baseline gap-1">
-                <Text className="text-2xl font-bold text-foreground">{Math.floor(userProgress.xp / 10)}</Text>
+                <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{Math.floor(userProgress.xp / 10)}</Text>
                 <Text className="text-lg">🪶</Text>
               </View>
-              <Text className="text-xs text-muted mt-1">earned</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark mt-1">earned</Text>
             </View>
 
             {/* Soar or Glide */}
@@ -180,12 +180,12 @@ export default function HomeScreen() {
                 elevation: 2,
               }}
             >
-              <Text className="text-xs text-muted font-semibold mb-2">STATUS</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">STATUS</Text>
               <View className="flex-row items-baseline gap-1">
-                <Text className="text-2xl font-bold text-foreground">{soarOrGlide.status}</Text>
+                <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{soarOrGlide.status}</Text>
                 <Text className="text-lg">{soarOrGlide.emoji}</Text>
               </View>
-              <Text className="text-xs text-muted mt-1">{burnoutIndicators.status}</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark mt-1">{burnoutIndicators.status}</Text>
             </View>
           </View>
 
@@ -198,8 +198,8 @@ export default function HomeScreen() {
               borderColor: soarOrGlide.status === 'Soar' ? colors.secondary + '30' : colors.primary + '30',
             }}
           >
-            <Text className="text-sm font-semibold text-foreground mb-1">{soarOrGlide.emoji} {soarOrGlide.status} or Glide</Text>
-            <Text className="text-xs text-muted leading-relaxed">{soarOrGlide.message}</Text>
+            <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark mb-1">{soarOrGlide.emoji} {soarOrGlide.status} or Glide</Text>
+            <Text className="text-xs text-muted dark:text-muted-dark leading-relaxed">{soarOrGlide.message}</Text>
           </View>
 
           {/* Action Buttons */}
@@ -236,13 +236,13 @@ export default function HomeScreen() {
                 router.push('/planner');
               }}
             >
-              <Text className="text-center font-bold text-foreground text-base">Add Task</Text>
+              <Text className="text-center font-bold text-foreground dark:text-foreground-dark text-base">Add Task</Text>
             </Pressable>
           </View>
 
           {/* Daily Quests */}
           <View className="mb-6">
-            <Text className="text-base font-bold text-foreground mb-3">Daily Quests</Text>
+            <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Daily Quests</Text>
             <View className="gap-3">
               {quests.map((quest) => (
                 <Pressable
@@ -262,8 +262,8 @@ export default function HomeScreen() {
                 >
                   <View className="flex-row justify-between items-start">
                     <View className="flex-1">
-                      <Text className="text-sm font-semibold text-foreground">{quest.title}</Text>
-                      <Text className="text-xs text-muted mt-1">{quest.description}</Text>
+                      <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">{quest.title}</Text>
+                      <Text className="text-xs text-muted dark:text-muted-dark mt-1">{quest.description}</Text>
                     </View>
                     <View className="items-end">
                       <Text className="text-xs font-bold" style={{ color: colors.accent }}>+{quest.reward} XP</Text>
@@ -296,7 +296,7 @@ export default function HomeScreen() {
               <Animated.Text style={{ fontSize: 24, transform: [{ scale: breatheAnim }] }}>🦅</Animated.Text>
               <Text className="text-sm font-bold flex-1" style={{ color: colors.accent }}>Falcon Coach Tip</Text>
             </View>
-            <Text className="text-sm text-foreground leading-relaxed">
+            <Text className="text-sm text-foreground dark:text-foreground-dark leading-relaxed">
               {FALCON_TIPS[currentTipIndex]}
             </Text>
           </View>
@@ -313,7 +313,7 @@ export default function HomeScreen() {
               elevation: 2,
             }}
           >
-            <Text className="text-base font-bold text-foreground mb-3">Energy Forecast</Text>
+            <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Energy Forecast</Text>
             <View
               className="rounded-xl p-3"
               style={{
@@ -348,7 +348,7 @@ export default function HomeScreen() {
             </View>
             <View className="flex-row gap-3 mt-3">
               <View className="flex-1">
-                <Text className="text-xs text-muted mb-1">Today</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark mb-1">Today</Text>
                 <View className="flex-row gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <View
@@ -360,7 +360,7 @@ export default function HomeScreen() {
                 </View>
               </View>
               <View className="flex-1">
-                <Text className="text-xs text-muted mb-1">Tomorrow</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark mb-1">Tomorrow</Text>
                 <View className="flex-row gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <View
@@ -376,7 +376,7 @@ export default function HomeScreen() {
 
           {/* Today's Schedule */}
           <View className="mb-6">
-            <Text className="text-base font-bold text-foreground mb-3">Today's Schedule</Text>
+            <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Today's Schedule</Text>
             <View className="gap-3">
               <View
                 className="rounded-2xl p-4"
@@ -389,8 +389,8 @@ export default function HomeScreen() {
                   elevation: 1,
                 }}
               >
-                <Text className="text-sm font-semibold text-foreground">Mathematics Lecture</Text>
-                <Text className="text-xs text-muted mt-1">10:00 AM - 11:30 AM</Text>
+                <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Mathematics Lecture</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark mt-1">10:00 AM - 11:30 AM</Text>
               </View>
               <View
                 className="rounded-2xl p-4"
@@ -403,8 +403,8 @@ export default function HomeScreen() {
                   elevation: 1,
                 }}
               >
-                <Text className="text-sm font-semibold text-foreground">Chemistry Study</Text>
-                <Text className="text-xs text-muted mt-1">2:00 PM - 3:30 PM</Text>
+                <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Chemistry Study</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark mt-1">2:00 PM - 3:30 PM</Text>
               </View>
               <View
                 className="rounded-2xl p-4"
@@ -417,8 +417,8 @@ export default function HomeScreen() {
                   elevation: 1,
                 }}
               >
-                <Text className="text-sm font-semibold text-foreground">Review Session</Text>
-                <Text className="text-xs text-muted mt-1">5:00 PM - 6:00 PM</Text>
+                <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Review Session</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark mt-1">5:00 PM - 6:00 PM</Text>
               </View>
             </View>
           </View>
@@ -432,7 +432,7 @@ export default function HomeScreen() {
               borderColor: colors.accent + '20',
             }}
           >
-            <Text className="text-sm italic text-foreground text-center leading-relaxed">
+            <Text className="text-sm italic text-foreground dark:text-foreground-dark text-center leading-relaxed">
               "Every soar begins with a single flap of the wings."
             </Text>
           </View>

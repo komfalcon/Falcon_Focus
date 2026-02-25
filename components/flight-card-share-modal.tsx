@@ -60,8 +60,8 @@ export function FlightCardShareModal({
       >
         {/* Header */}
         <View className="mb-6">
-          <Text className="text-2xl font-bold text-foreground">Share Your Flight</Text>
-          <Text className="text-sm text-muted mt-2">
+          <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">Share Your Flight</Text>
+          <Text className="text-sm text-muted dark:text-muted-dark mt-2">
             Inspire your flock with your Falcon Focus progress
           </Text>
         </View>
@@ -76,20 +76,20 @@ export function FlightCardShareModal({
           }}
         >
           <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-lg font-bold text-foreground">🦅 {flightCard.altitude}</Text>
+            <Text className="text-lg font-bold text-foreground dark:text-foreground-dark">🦅 {flightCard.altitude}</Text>
             <Text className="text-sm font-semibold" style={{ color: colors.accent }}>{flightCard.xp} XP</Text>
           </View>
           <View className="flex-row justify-between items-center">
-            <Text className="text-sm text-foreground">
+            <Text className="text-sm text-foreground dark:text-foreground-dark">
               🔥 {flightCard.streak}-day streak
             </Text>
-            <Text className="text-xs text-muted">Falcon Focus by Korede Omotosho</Text>
+            <Text className="text-xs text-muted dark:text-muted-dark">Falcon Focus by Korede Omotosho</Text>
           </View>
-          <Text className="text-xs text-muted italic mt-3">"{flightCard.motivationalQuote}"</Text>
+          <Text className="text-xs text-muted dark:text-muted-dark italic mt-3">"{flightCard.motivationalQuote}"</Text>
         </View>
 
         {/* Platform Selection */}
-        <Text className="text-sm font-bold text-foreground mb-3">Share to:</Text>
+        <Text className="text-sm font-bold text-foreground dark:text-foreground-dark mb-3">Share to:</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -129,8 +129,8 @@ export function FlightCardShareModal({
             borderColor: colors.border,
           }}
         >
-          <Text className="text-xs text-muted mb-2">Message preview:</Text>
-          <Text className="text-sm text-foreground leading-relaxed">{shareMessage}</Text>
+          <Text className="text-xs text-muted dark:text-muted-dark mb-2">Message preview:</Text>
+          <Text className="text-sm text-foreground dark:text-foreground-dark leading-relaxed">{shareMessage}</Text>
         </View>
 
         {/* Action Buttons */}
@@ -144,7 +144,7 @@ export function FlightCardShareModal({
               borderColor: colors.border,
             }}
           >
-            <Text className="font-bold text-foreground">Cancel</Text>
+            <Text className="font-bold text-foreground dark:text-foreground-dark">Cancel</Text>
           </Pressable>
           <Pressable
             onPress={handleShare}
@@ -163,7 +163,7 @@ export function FlightCardShareModal({
         </View>
 
         {/* Founder Credit */}
-        <Text className="text-xs text-muted text-center mt-4">
+        <Text className="text-xs text-muted dark:text-muted-dark text-center mt-4">
           Falcon Focus by Korede Omotosho • Free forever
         </Text>
       </View>

@@ -45,8 +45,8 @@ export default function FlockScreen() {
     return (
       <ScreenContainer className="items-center justify-center p-6">
         <Text className="text-5xl mb-4">🦅</Text>
-        <Text className="text-lg font-bold text-foreground mb-2">Gathering your flock...</Text>
-        <Text className="text-sm text-muted text-center">Great things happen when falcons fly together</Text>
+        <Text className="text-lg font-bold text-foreground dark:text-foreground-dark mb-2">Gathering your flock...</Text>
+        <Text className="text-sm text-muted dark:text-muted-dark text-center">Great things happen when falcons fly together</Text>
       </ScreenContainer>
     );
   }
@@ -58,8 +58,8 @@ export default function FlockScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
         {/* Header */}
         <View className="mb-6">
-          <Text className="text-3xl font-bold text-foreground tracking-tight">🦅 {flock.name}</Text>
-          <Text className="text-sm text-muted mt-1">{flock.description || 'Study together, soar higher'}</Text>
+          <Text className="text-3xl font-bold text-foreground dark:text-foreground-dark tracking-tight">🦅 {flock.name}</Text>
+          <Text className="text-sm text-muted dark:text-muted-dark mt-1">{flock.description || 'Study together, soar higher'}</Text>
         </View>
 
         {/* Flock Stats */}
@@ -76,8 +76,8 @@ export default function FlockScreen() {
             }}
           >
             <View>
-              <Text className="text-sm text-muted">Members</Text>
-              <Text className="text-2xl font-bold text-foreground">{stats.totalMembers}</Text>
+              <Text className="text-sm text-muted dark:text-muted-dark">Members</Text>
+              <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{stats.totalMembers}</Text>
             </View>
             <Text className="text-4xl">👥</Text>
           </View>
@@ -94,8 +94,8 @@ export default function FlockScreen() {
             }}
           >
             <View>
-              <Text className="text-sm text-muted">Combined XP</Text>
-              <Text className="text-2xl font-bold text-foreground">{stats.totalXP}</Text>
+              <Text className="text-sm text-muted dark:text-muted-dark">Combined XP</Text>
+              <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{stats.totalXP}</Text>
             </View>
             <Text className="text-4xl">⚡</Text>
           </View>
@@ -112,8 +112,8 @@ export default function FlockScreen() {
             }}
           >
             <View>
-              <Text className="text-sm text-muted">Avg Streak</Text>
-              <Text className="text-2xl font-bold text-foreground">{stats.avgStreak} days</Text>
+              <Text className="text-sm text-muted dark:text-muted-dark">Avg Streak</Text>
+              <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{stats.avgStreak} days</Text>
             </View>
             <Text className="text-4xl">🔥</Text>
           </View>
@@ -133,9 +133,9 @@ export default function FlockScreen() {
             elevation: 2,
           }}
         >
-          <Text className="text-sm text-muted mb-2">Invite Code</Text>
+          <Text className="text-sm text-muted dark:text-muted-dark mb-2">Invite Code</Text>
           <View className="flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-foreground font-mono">{flock.inviteCode}</Text>
+            <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark font-mono">{flock.inviteCode}</Text>
             <Pressable
               onPress={async () => {
                 await Clipboard.setStringAsync(flock.inviteCode);
@@ -147,11 +147,11 @@ export default function FlockScreen() {
               <Text className="text-sm font-bold text-white">Copy</Text>
             </Pressable>
           </View>
-          <Text className="text-xs text-muted mt-2">Share this code with friends to invite them</Text>
+          <Text className="text-xs text-muted dark:text-muted-dark mt-2">Share this code with friends to invite them</Text>
         </View>
 
         {/* Members List */}
-        <Text className="text-base font-bold text-foreground mb-3">Members ({flock.members.length})</Text>
+        <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Members ({flock.members.length})</Text>
         <View className="gap-3 mb-6">
           {flock.members.map((member: any) => (
             <View
@@ -167,18 +167,18 @@ export default function FlockScreen() {
               }}
             >
               <View className="flex-1">
-                <Text className="font-bold text-foreground">{member.name}</Text>
+                <Text className="font-bold text-foreground dark:text-foreground-dark">{member.name}</Text>
                 <View className="flex-row gap-4 mt-2">
                   <View>
-                    <Text className="text-xs text-muted">Altitude</Text>
+                    <Text className="text-xs text-muted dark:text-muted-dark">Altitude</Text>
                     <Text className="text-sm font-bold" style={{ color: colors.primary }}>{member.altitude}</Text>
                   </View>
                   <View>
-                    <Text className="text-xs text-muted">Streak</Text>
+                    <Text className="text-xs text-muted dark:text-muted-dark">Streak</Text>
                     <Text className="text-sm font-bold" style={{ color: colors.primary }}>{member.streak}🔥</Text>
                   </View>
                   <View>
-                    <Text className="text-xs text-muted">XP</Text>
+                    <Text className="text-xs text-muted dark:text-muted-dark">XP</Text>
                     <Text className="text-sm font-bold" style={{ color: colors.accent }}>{member.xp}</Text>
                   </View>
                 </View>
@@ -191,7 +191,7 @@ export default function FlockScreen() {
         </View>
 
         {/* Leaderboard */}
-        <Text className="text-base font-bold text-foreground mb-3">Leaderboard</Text>
+        <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Leaderboard</Text>
         <View
           className="rounded-2xl p-5 mb-6"
           style={{
@@ -206,11 +206,11 @@ export default function FlockScreen() {
           }}
         >
           <View className="flex-row justify-between items-center mb-3">
-            <Text className="font-bold text-foreground">Top Flyer</Text>
+            <Text className="font-bold text-foreground dark:text-foreground-dark">Top Flyer</Text>
             <Text className="text-2xl">🏆</Text>
           </View>
           <Text className="text-lg font-bold" style={{ color: colors.accent }}>{stats.topMember.name}</Text>
-          <Text className="text-sm text-muted mt-2">
+          <Text className="text-sm text-muted dark:text-muted-dark mt-2">
             {stats.topMember.xp} XP • {stats.topMember.altitude} Altitude
           </Text>
         </View>
@@ -229,8 +229,8 @@ export default function FlockScreen() {
             elevation: 1,
           }}
         >
-          <Text className="text-sm font-bold text-foreground mb-2">💡 Accountability Nudge</Text>
-          <Text className="text-sm text-muted leading-relaxed">
+          <Text className="text-sm font-bold text-foreground dark:text-foreground-dark mb-2">💡 Accountability Nudge</Text>
+          <Text className="text-sm text-muted dark:text-muted-dark leading-relaxed">
             {FlockModeService.generateAccountabilityNudge(flock, 'You')}
           </Text>
         </View>
@@ -270,7 +270,7 @@ export default function FlockScreen() {
         </View>
 
         {/* Founder Credit */}
-        <Text className="text-xs text-muted text-center mb-4">
+        <Text className="text-xs text-muted dark:text-muted-dark text-center mb-4">
           Falcon Focus by Korede Omotosho • Free forever
         </Text>
       </ScrollView>

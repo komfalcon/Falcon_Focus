@@ -141,7 +141,7 @@ export default function FocusScreen() {
     <ScreenContainer className="p-4">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="mb-8">
-          <Text className="text-3xl font-bold text-foreground mb-6 tracking-tight">Focus</Text>
+          <Text className="text-3xl font-bold text-foreground dark:text-foreground-dark mb-6 tracking-tight">Focus</Text>
 
           <View className="flex-row gap-2 mb-6">
             <Pressable
@@ -158,7 +158,7 @@ export default function FocusScreen() {
             >
               <Text
                 className={`text-center font-bold text-sm ${
-                  mode === 'pomodoro' ? 'text-white' : 'text-foreground'
+                  mode === 'pomodoro' ? 'text-white' : 'text-foreground dark:text-foreground-dark'
                 }`}
               >
                 Pomodoro
@@ -178,7 +178,7 @@ export default function FocusScreen() {
             >
               <Text
                 className={`text-center font-bold text-sm ${
-                  mode === 'falcon_dive' ? 'text-white' : 'text-foreground'
+                  mode === 'falcon_dive' ? 'text-white' : 'text-foreground dark:text-foreground-dark'
                 }`}
               >
                 Falcon Dive
@@ -215,7 +215,7 @@ export default function FocusScreen() {
                 <Text className="text-4xl">🦅</Text>
               </View>
             </View>
-            <Text className="text-xs text-muted mt-4">{Math.round(soaringPercentage)}% Soaring</Text>
+            <Text className="text-xs text-muted dark:text-muted-dark mt-4">{Math.round(soaringPercentage)}% Soaring</Text>
           </View>
 
           <View className="flex-row gap-3 mb-6">
@@ -230,8 +230,8 @@ export default function FocusScreen() {
                 elevation: 2,
               }}
             >
-              <Text className="text-xs text-muted font-semibold mb-2">SESSIONS</Text>
-              <Text className="text-2xl font-bold text-foreground">{sessionsCompleted}</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">SESSIONS</Text>
+              <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{sessionsCompleted}</Text>
             </View>
             <View
               className="flex-1 rounded-2xl p-4"
@@ -244,8 +244,8 @@ export default function FocusScreen() {
                 elevation: 2,
               }}
             >
-              <Text className="text-xs text-muted font-semibold mb-2">DISTRACTIONS</Text>
-              <Text className="text-2xl font-bold text-error">{distractions}</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">DISTRACTIONS</Text>
+              <Text className="text-2xl font-bold text-error dark:text-error-dark">{distractions}</Text>
             </View>
             <View
               className="flex-1 rounded-2xl p-4"
@@ -258,8 +258,8 @@ export default function FocusScreen() {
                 elevation: 2,
               }}
             >
-              <Text className="text-xs text-muted font-semibold mb-2">FOCUS</Text>
-              <Text className="text-2xl font-bold text-success">
+              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">FOCUS</Text>
+              <Text className="text-2xl font-bold text-success dark:text-success-dark">
                 {focusLevel === 'high' ? '🔥' : focusLevel === 'medium' ? '💪' : '😴'}
               </Text>
             </View>
@@ -295,7 +295,7 @@ export default function FocusScreen() {
                   }}
                   onPress={pauseTimer}
                 >
-                  <Text className="text-center font-bold text-foreground text-base">Pause</Text>
+                  <Text className="text-center font-bold text-foreground dark:text-foreground-dark text-base">Pause</Text>
                 </Pressable>
                 <Pressable
                   className="flex-1 rounded-2xl py-4 active:opacity-80"
@@ -324,12 +324,12 @@ export default function FocusScreen() {
             }}
             onPress={logDistraction}
           >
-            <Text className="text-sm font-bold text-error">+ Log Distraction ({distractions})</Text>
+            <Text className="text-sm font-bold text-error dark:text-error-dark">+ Log Distraction ({distractions})</Text>
             <Text className="text-xs mt-1" style={{ color: colors.error + 'aa' }}>Track interruptions during focus sessions</Text>
           </Pressable>
 
           <View className="mb-6">
-            <Text className="text-base font-bold text-foreground mb-3">Settings</Text>
+            <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Settings</Text>
 
             <View className="gap-3">
               <View
@@ -344,8 +344,8 @@ export default function FocusScreen() {
                 }}
               >
                 <View>
-                  <Text className="text-sm font-semibold text-foreground">Work Duration</Text>
-                  <Text className="text-xs text-muted mt-1">{workDuration} minutes</Text>
+                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Work Duration</Text>
+                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">{workDuration} minutes</Text>
                 </View>
                 <View className="flex-row gap-2">
                   <Pressable
@@ -377,8 +377,8 @@ export default function FocusScreen() {
                 }}
               >
                 <View>
-                  <Text className="text-sm font-semibold text-foreground">Break Duration</Text>
-                  <Text className="text-xs text-muted mt-1">{breakDuration} minutes</Text>
+                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Break Duration</Text>
+                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">{breakDuration} minutes</Text>
                 </View>
                 <View className="flex-row gap-2">
                   <Pressable
@@ -410,8 +410,8 @@ export default function FocusScreen() {
                 }}
               >
                 <View>
-                  <Text className="text-sm font-semibold text-foreground">Ambient Sounds</Text>
-                  <Text className="text-xs text-muted mt-1">Background focus music</Text>
+                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Ambient Sounds</Text>
+                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">Background focus music</Text>
                 </View>
                 <Switch
                   value={ambientSounds}
@@ -433,8 +433,8 @@ export default function FocusScreen() {
                 }}
               >
                 <View>
-                  <Text className="text-sm font-semibold text-foreground">Fullscreen Mode</Text>
-                  <Text className="text-xs text-muted mt-1">Immersive focus experience</Text>
+                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Fullscreen Mode</Text>
+                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">Immersive focus experience</Text>
                 </View>
                 <Switch
                   value={fullscreen}
@@ -455,7 +455,7 @@ export default function FocusScreen() {
                   elevation: 1,
                 }}
               >
-                <Text className="text-sm font-semibold text-foreground mb-3">Focus Level</Text>
+                <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark mb-3">Focus Level</Text>
                 <View className="flex-row gap-2">
                   {(['low', 'medium', 'high'] as const).map((level) => (
                     <Pressable
@@ -470,7 +470,7 @@ export default function FocusScreen() {
                     >
                       <Text
                         className={`text-center text-sm font-bold ${
-                          focusLevel === level ? 'text-white' : 'text-foreground'
+                          focusLevel === level ? 'text-white' : 'text-foreground dark:text-foreground-dark'
                         }`}
                       >
                         {level === 'low' ? '😴' : level === 'medium' ? '💪' : '🔥'}
@@ -494,7 +494,7 @@ export default function FocusScreen() {
             }}
             onPress={resetTimer}
           >
-            <Text className="text-center font-bold text-foreground">Reset Session</Text>
+            <Text className="text-center font-bold text-foreground dark:text-foreground-dark">Reset Session</Text>
           </Pressable>
         </View>
       </ScrollView>

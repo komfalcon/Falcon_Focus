@@ -13,8 +13,8 @@ export default function LearnScreen() {
         <View className="mb-8">
           {/* Header */}
           <View className="mb-6">
-            <Text className="text-3xl font-bold text-foreground mb-1 tracking-tight">Learn</Text>
-            <Text className="text-xs text-muted">Notes & Flashcards</Text>
+            <Text className="text-3xl font-bold text-foreground dark:text-foreground-dark mb-1 tracking-tight">Learn</Text>
+            <Text className="text-xs text-muted dark:text-muted-dark">Notes & Flashcards</Text>
           </View>
 
           {/* Tab Toggle */}
@@ -33,7 +33,7 @@ export default function LearnScreen() {
             >
               <Text
                 className={`text-sm font-bold text-center ${
-                  activeTab === 'notes' ? 'text-white' : 'text-foreground'
+                  activeTab === 'notes' ? 'text-white' : 'text-foreground dark:text-foreground-dark'
                 }`}
               >
                 Notes
@@ -53,7 +53,7 @@ export default function LearnScreen() {
             >
               <Text
                 className={`text-sm font-bold text-center ${
-                  activeTab === 'flashcards' ? 'text-white' : 'text-foreground'
+                  activeTab === 'flashcards' ? 'text-white' : 'text-foreground dark:text-foreground-dark'
                 }`}
               >
                 Flashcards
@@ -93,12 +93,12 @@ export default function LearnScreen() {
                 >
                   <View className="flex-row justify-between items-start mb-2">
                     <View className="flex-1">
-                      <Text className="text-sm font-bold text-foreground">Calculus Derivatives</Text>
-                      <Text className="text-xs text-muted mt-1">Mathematics</Text>
+                      <Text className="text-sm font-bold text-foreground dark:text-foreground-dark">Calculus Derivatives</Text>
+                      <Text className="text-xs text-muted dark:text-muted-dark mt-1">Mathematics</Text>
                     </View>
-                    <Text className="text-xs text-muted">Today</Text>
+                    <Text className="text-xs text-muted dark:text-muted-dark">Today</Text>
                   </View>
-                  <Text className="text-xs text-muted leading-relaxed">
+                  <Text className="text-xs text-muted dark:text-muted-dark leading-relaxed">
                     The derivative of a function measures how the function changes as its input changes...
                   </Text>
                   <View className="flex-row gap-2 mt-3">
@@ -124,12 +124,12 @@ export default function LearnScreen() {
                 >
                   <View className="flex-row justify-between items-start mb-2">
                     <View className="flex-1">
-                      <Text className="text-sm font-bold text-foreground">Biology Photosynthesis</Text>
-                      <Text className="text-xs text-muted mt-1">Biology</Text>
+                      <Text className="text-sm font-bold text-foreground dark:text-foreground-dark">Biology Photosynthesis</Text>
+                      <Text className="text-xs text-muted dark:text-muted-dark mt-1">Biology</Text>
                     </View>
-                    <Text className="text-xs text-muted">Yesterday</Text>
+                    <Text className="text-xs text-muted dark:text-muted-dark">Yesterday</Text>
                   </View>
-                  <Text className="text-xs text-muted leading-relaxed">
+                  <Text className="text-xs text-muted dark:text-muted-dark leading-relaxed">
                     Photosynthesis is the process by which plants convert light energy into chemical energy...
                   </Text>
                 </View>
@@ -197,10 +197,10 @@ export default function LearnScreen() {
                 >
                   <View className="flex-row justify-between items-start mb-2">
                     <View className="flex-1">
-                      <Text className="text-sm font-bold text-foreground">Chemistry Elements</Text>
-                      <Text className="text-xs text-muted mt-1">Science</Text>
+                      <Text className="text-sm font-bold text-foreground dark:text-foreground-dark">Chemistry Elements</Text>
+                      <Text className="text-xs text-muted dark:text-muted-dark mt-1">Science</Text>
                     </View>
-                    <Text className="text-xs text-muted">18 cards</Text>
+                    <Text className="text-xs text-muted dark:text-muted-dark">18 cards</Text>
                   </View>
                   <View className="flex-row gap-2 mt-3">
                     <Pressable
@@ -213,7 +213,7 @@ export default function LearnScreen() {
                       className="flex-1 rounded-xl p-2.5 active:opacity-80"
                       style={{ backgroundColor: colors.border + '40' }}
                     >
-                      <Text className="text-xs font-bold text-muted text-center">Edit</Text>
+                      <Text className="text-xs font-bold text-muted dark:text-muted-dark text-center">Edit</Text>
                     </Pressable>
                   </View>
                 </View>

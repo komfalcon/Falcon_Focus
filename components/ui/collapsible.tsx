@@ -9,7 +9,7 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
   const colors = useColors();
 
   return (
-    <View className="bg-background">
+    <View className="bg-background dark:bg-background-dark">
       <TouchableOpacity
         className="flex-row items-center gap-1.5"
         onPress={() => setIsOpen((value) => !value)}
@@ -22,7 +22,7 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
           color={colors.icon}
           style={{ transform: [{ rotate: isOpen ? "90deg" : "0deg" }] }}
         />
-        <Text className="text-base font-semibold text-foreground">{title}</Text>
+        <Text className="text-base font-semibold text-foreground dark:text-foreground-dark">{title}</Text>
       </TouchableOpacity>
       {isOpen && <View className="mt-1.5 ml-6">{children}</View>}
     </View>

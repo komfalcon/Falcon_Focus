@@ -5,7 +5,7 @@ const tailwindColors = Object.fromEntries(
   Object.entries(themeColors).map(([name, swatch]) => [
     name,
     {
-      DEFAULT: `var(--color-${name})`,
+      DEFAULT: swatch.light,
       light: swatch.light,
       dark: swatch.dark,
     },
@@ -18,7 +18,6 @@ module.exports = {
   // Scan all component and app files for Tailwind classes
   content: ["./app/**/*.{js,ts,tsx}", "./components/**/*.{js,ts,tsx}", "./lib/**/*.{js,ts,tsx}", "./hooks/**/*.{js,ts,tsx}"],
 
-  presets: [require("nativewind/preset")],
   theme: {
     extend: {
       colors: tailwindColors,
@@ -39,7 +38,6 @@ module.exports = {
   plugins: [
     plugin(({ addVariant }) => {
       addVariant("light", ':root:not([data-theme="dark"]) &');
-      addVariant("dark", ':root[data-theme="dark"] &');
     }),
   ],
 };

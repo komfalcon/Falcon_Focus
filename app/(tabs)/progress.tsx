@@ -43,7 +43,7 @@ export default function ProgressScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="mb-8">
           {/* Header */}
-          <Text className="text-3xl font-bold text-foreground mb-6 tracking-tight">Progress</Text>
+          <Text className="text-3xl font-bold text-foreground dark:text-foreground-dark mb-6 tracking-tight">Progress</Text>
 
           {/* Level Card */}
           <View
@@ -83,9 +83,9 @@ export default function ProgressScreen() {
                 elevation: 2,
               }}
             >
-              <Text className="text-xs text-muted font-semibold mb-2">TOTAL STUDY</Text>
-              <Text className="text-2xl font-bold text-foreground">{userProgress.totalStudyHours}h</Text>
-              <Text className="text-xs text-muted mt-1">hours</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">TOTAL STUDY</Text>
+              <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{userProgress.totalStudyHours}h</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark mt-1">hours</Text>
             </View>
 
             <View
@@ -99,9 +99,9 @@ export default function ProgressScreen() {
                 elevation: 2,
               }}
             >
-              <Text className="text-xs text-muted font-semibold mb-2">SESSIONS</Text>
-              <Text className="text-2xl font-bold text-foreground">{userProgress.totalSessions}</Text>
-              <Text className="text-xs text-muted mt-1">completed</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">SESSIONS</Text>
+              <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{userProgress.totalSessions}</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark mt-1">completed</Text>
             </View>
 
             <View
@@ -115,15 +115,15 @@ export default function ProgressScreen() {
                 elevation: 2,
               }}
             >
-              <Text className="text-xs text-muted font-semibold mb-2">COMPLETION</Text>
-              <Text className="text-2xl font-bold text-success">{completionRate}%</Text>
-              <Text className="text-xs text-muted mt-1">tasks done</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">COMPLETION</Text>
+              <Text className="text-2xl font-bold text-success dark:text-success-dark">{completionRate}%</Text>
+              <Text className="text-xs text-muted dark:text-muted-dark mt-1">tasks done</Text>
             </View>
           </View>
 
           {/* Mastery Tracking */}
           <View className="mb-6">
-            <Text className="text-base font-bold text-foreground mb-3">Subject Mastery</Text>
+            <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Subject Mastery</Text>
             <View className="gap-3">
               {[
                 { subject: 'Mathematics', progress: 75, color: colors.primary },
@@ -143,8 +143,8 @@ export default function ProgressScreen() {
                   }}
                 >
                   <View className="flex-row justify-between items-center mb-2">
-                    <Text className="text-sm font-semibold text-foreground">{item.subject}</Text>
-                    <Text className="text-xs font-bold text-foreground">{item.progress}%</Text>
+                    <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">{item.subject}</Text>
+                    <Text className="text-xs font-bold text-foreground dark:text-foreground-dark">{item.progress}%</Text>
                   </View>
                   <View className="rounded-full h-2 overflow-hidden" style={{ backgroundColor: colors.border }}>
                     <View
@@ -159,7 +159,7 @@ export default function ProgressScreen() {
 
           {/* Badges */}
           <View className="mb-6">
-            <Text className="text-base font-bold text-foreground mb-3">Badges Earned</Text>
+            <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Badges Earned</Text>
             <View className="flex-row flex-wrap gap-3">
               {BADGES.map((badge) => (
                 <Pressable
@@ -180,7 +180,7 @@ export default function ProgressScreen() {
                 >
                   <View className="items-center">
                     <Text className="text-3xl mb-1">{badge.icon}</Text>
-                    <Text className="text-xs font-bold text-foreground text-center">{badge.name}</Text>
+                    <Text className="text-xs font-bold text-foreground dark:text-foreground-dark text-center">{badge.name}</Text>
                   </View>
                 </Pressable>
               ))}
@@ -189,7 +189,7 @@ export default function ProgressScreen() {
 
           {/* Weekly Heatmap */}
           <View className="mb-6">
-            <Text className="text-base font-bold text-foreground mb-3">Weekly Activity</Text>
+            <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Weekly Activity</Text>
             <View
               className="rounded-2xl p-4"
               style={{
@@ -215,7 +215,7 @@ export default function ProgressScreen() {
                             : colors.border,
                       }}
                     />
-                    <Text className="text-xs text-muted font-semibold">{day}</Text>
+                    <Text className="text-xs text-muted dark:text-muted-dark font-semibold">{day}</Text>
                   </View>
                 ))}
               </View>
@@ -225,7 +225,7 @@ export default function ProgressScreen() {
           {/* Goals Summary */}
           <View className="mb-6">
             <View className="flex-row justify-between items-center mb-3">
-              <Text className="text-base font-bold text-foreground">Goals Progress</Text>
+              <Text className="text-base font-bold text-foreground dark:text-foreground-dark">Goals Progress</Text>
               <Pressable
                 className="rounded-xl px-4 py-2 active:opacity-80"
                 style={{ backgroundColor: colors.primary }}
@@ -253,8 +253,8 @@ export default function ProgressScreen() {
                   }}
                 >
                   <View className="flex-row justify-between items-center mb-2">
-                    <Text className="text-sm font-semibold text-foreground">{goal.title}</Text>
-                    <Text className="text-xs font-bold text-foreground">{goal.progress}%</Text>
+                    <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">{goal.title}</Text>
+                    <Text className="text-xs font-bold text-foreground dark:text-foreground-dark">{goal.progress}%</Text>
                   </View>
                   <View className="rounded-full h-2 overflow-hidden" style={{ backgroundColor: colors.border }}>
                     <View
@@ -285,9 +285,9 @@ export default function ProgressScreen() {
               <Text className="text-lg">📊</Text>
               <View className="flex-1">
                 <Text className="text-sm font-bold" style={{ color: colors.accent }}>Generate Flight Report</Text>
-                <Text className="text-xs text-muted">Download detailed progress analysis</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark">Download detailed progress analysis</Text>
               </View>
-              <Text className="text-lg text-muted">→</Text>
+              <Text className="text-lg text-muted dark:text-muted-dark">→</Text>
             </View>
           </Pressable>
         </View>
