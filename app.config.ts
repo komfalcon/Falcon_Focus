@@ -5,6 +5,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 
   name: "Falcon Focus",
   slug: "falcon-focus",
+  owner: "falconkom",
   version: "1.0.0",
   orientation: "portrait",
 
@@ -43,7 +44,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     ...config.extra,
     eas: {
-      projectId: "3f5cd4dd-f7bb-4d83-b282-42d6cfcf2c32"
+      projectId: "d087eff4-2b45-44b4-b4c9-3d3a7dbc494f"
     }
   }
 });
