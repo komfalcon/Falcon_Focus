@@ -3,8 +3,8 @@ import { ExpoConfig, ConfigContext } from '@expo/config';
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
 
-  name: "Study Planner App",
-  slug: "study-planner-app",
+  name: "Falcon Focus",
+  slug: "falcon-focus",
   version: "1.0.0",
   orientation: "portrait",
 
@@ -23,11 +23,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   assetBundlePatterns: ["**/*"],
 
   ios: {
-    supportsTablet: true
+    supportsTablet: true,
+    bundleIdentifier: "com.falconkom.falconfocus"
   },
 
   android: {
-    package: "com.falconkom.studyplanner", // REQUIRED
+    package: "com.falconkom.falconfocus",
     versionCode: 1,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
