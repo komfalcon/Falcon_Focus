@@ -40,12 +40,15 @@ const YOUR_NAME = 'You';
 
 const RANK_COLORS = ['#FFB81C', '#C0C0C0', '#CD7F32'] as const;
 
-const DEMO_MEMBERS: FlockMember[] = [
-  { id: 'm_2', name: 'Amina', joinCode: '', joinedAt: Date.now() - 86400000 * 3, altitude: 'Soaring', streak: 12, xp: 3200, lastUpdate: Date.now() - 3600000 },
-  { id: 'm_3', name: 'Carlos', joinCode: '', joinedAt: Date.now() - 86400000 * 5, altitude: 'Apex', streak: 24, xp: 7800, lastUpdate: Date.now() - 7200000 },
-  { id: 'm_4', name: 'Fatima', joinCode: '', joinedAt: Date.now() - 86400000 * 2, altitude: 'Fledgling', streak: 3, xp: 450, lastUpdate: Date.now() - 1800000 },
-  { id: 'm_5', name: 'Jin', joinCode: '', joinedAt: Date.now() - 86400000 * 7, altitude: 'Soaring', streak: 18, xp: 4100, lastUpdate: Date.now() - 5400000 },
-];
+function buildDemoMembers(): FlockMember[] {
+  const now = Date.now();
+  return [
+    { id: 'm_2', name: 'Amina', joinCode: '', joinedAt: now - 86400000 * 3, altitude: 'Soaring', streak: 12, xp: 3200, lastUpdate: now - 3600000 },
+    { id: 'm_3', name: 'Carlos', joinCode: '', joinedAt: now - 86400000 * 5, altitude: 'Apex', streak: 24, xp: 7800, lastUpdate: now - 7200000 },
+    { id: 'm_4', name: 'Fatima', joinCode: '', joinedAt: now - 86400000 * 2, altitude: 'Fledgling', streak: 3, xp: 450, lastUpdate: now - 1800000 },
+    { id: 'm_5', name: 'Jin', joinCode: '', joinedAt: now - 86400000 * 7, altitude: 'Soaring', streak: 18, xp: 4100, lastUpdate: now - 5400000 },
+  ];
+}
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -349,7 +352,7 @@ export default function FlockScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const created = FlockModeService.createFlock(YOUR_NAME, name, newFlockDesc.trim() || undefined);
     // Inject demo members for a richer experience
-    const withDemo: Flock = { ...created, members: [...created.members, ...DEMO_MEMBERS] };
+    const withDemo: Flock = { ...created, members: [...created.members, ...buildDemoMembers()] };
     setFlock(withDemo);
     await saveFlock(withDemo);
     // Seed demo chat
@@ -374,7 +377,7 @@ export default function FlockScreen() {
     const withDemo: Flock = {
       ...joined,
       inviteCode: code,
-      members: [...joined.members, ...DEMO_MEMBERS],
+      members: [...joined.members, ...buildDemoMembers()],
     };
     setFlock(withDemo);
     await saveFlock(withDemo);
