@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Platform } from "react-native";
+import { Platform, View, ActivityIndicator } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { useAuthContext } from "@/lib/auth/auth-context";
 
@@ -14,8 +14,17 @@ export default function TabLayout() {
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 60 + bottomPadding;
 
-  // Redirect unauthenticated users to sign-in (skip while loading)
-  if (!isLoading && !isAuthenticated) {
+  // Wait for auth to resolve before rendering or redirecting
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  // Redirect unauthenticated users to sign-in
+  if (!isAuthenticated) {
     return <Redirect href="/(auth)/sign-in" />;
   }
 

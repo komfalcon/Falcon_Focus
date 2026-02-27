@@ -84,7 +84,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    loadStoredAuth();
+    loadStoredAuth().catch((error) => {
+      console.error("[AuthContext] Unexpected error during auth init:", error);
+      setIsLoading(false);
+    });
   }, [loadStoredAuth]);
 
   const storeAuthData = useCallback(async (userData: AuthUser, tokens: { accessToken: string; refreshToken: string }) => {

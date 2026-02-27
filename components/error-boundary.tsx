@@ -39,7 +39,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
           <Text style={{ fontSize: 14, color: "#8899aa", textAlign: "center", marginBottom: 24, lineHeight: 20 }}>
             Falcon Focus encountered an unexpected error. Please try again.
           </Text>
-          {__DEV__ && this.state.error && (
+          {this.state.error && (
             <Text style={{ fontSize: 12, color: "#ff6b6b", textAlign: "left", marginBottom: 16, fontFamily: "monospace", backgroundColor: "#1a2530", padding: 12, borderRadius: 8, overflow: "hidden", maxHeight: 200 }}>
               {this.state.error.toString()}
               {"\n"}
