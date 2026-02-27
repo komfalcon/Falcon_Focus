@@ -1,448 +1,657 @@
-import { ScrollView, Text, View, Pressable, RefreshControl, Animated } from 'react-native';
+import { ScrollView, Text, View, Pressable, RefreshControl } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { useStudy } from '@/lib/study-context';
-import { useState, useCallback, useEffect, useRef } from 'react';
-
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { GamificationEngine } from '@/lib/gamification-engine';
-import { BurnoutGuardian } from '@/lib/burnout-guardian';
+import { GamificationEngine, Quest } from '@/lib/gamification-engine';
+import { BurnoutGuardian, EnergyLevel } from '@/lib/burnout-guardian';
 import { SkeletonCard, SkeletonStatCard } from '@/components/skeleton';
+import { EmptyState } from '@/components/empty-state';
 
 const FALCON_TIPS = [
-  'Your Chemistry kinetics is weak before exam — try this 25-min targeted dive',
-  'You\'re crushing it! 7-day streak incoming. Keep the momentum.',
+  'Your Chemistry kinetics is weak before exam — try this 25-min targeted dive.',
+  "You're crushing it! 7-day streak incoming. Keep the momentum.",
   'Energy is high today — perfect for deep focus sessions.',
   'Take a break! Your energy is declining. A 10-min walk helps.',
-  'Review yesterday\'s notes before starting today\'s session.',
+  "Review yesterday's notes before starting today's session.",
 ];
 
-const DAILY_QUESTS = GamificationEngine.generateDailyQuests();
+const QUEST_COLORS = ['#0a7ea4', '#FFB81C', '#e74c3c', '#2ecc71', '#9b59b6'];
+
+const INITIAL_QUESTS = GamificationEngine.generateDailyQuests();
+
+function formatTime(hhmm: string): string {
+  const [h, m] = hhmm.split(':').map(Number);
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h % 12 || 12;
+  return `${hour12}:${m.toString().padStart(2, '0')} ${suffix}`;
+}
+
+function getEnergyEmoji(level: number): string {
+  if (level >= 4) return '🔋';
+  if (level === 3) return '⚡';
+  return '🪫';
+}
+
+function getEnergyLabel(level: number): string {
+  if (level >= 4) return 'High';
+  if (level === 3) return 'Moderate';
+  if (level === 2) return 'Low';
+  return 'Critical';
+}
+
+function getQuestResetCountdown(): string {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  const diff = midnight.getTime() - now.getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m`;
+}
 
 export default function HomeScreen() {
   const colors = useColors();
   const router = useRouter();
-  const { tasks, userProgress, getAltitudePercentage, getStreakCount, energyLogs } = useStudy();
+  const {
+    tasks,
+    userProgress,
+    getAltitudePercentage,
+    getStreakCount,
+    energyLogs,
+    studyBlocks,
+  } = useStudy();
+
   const [refreshing, setRefreshing] = useState(false);
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
-  const [quests, setQuests] = useState(DAILY_QUESTS);
-  const [burnoutIndicators, setBurnoutIndicators] = useState(BurnoutGuardian.analyzeBurnoutRisk([]));
-  const [energyForecast, setEnergyForecast] = useState(BurnoutGuardian.generateEnergyForecast([], 0));
+  const [quests, setQuests] = useState<Quest[]>(INITIAL_QUESTS);
+  const [burnoutIndicators, setBurnoutIndicators] = useState(
+    BurnoutGuardian.analyzeBurnoutRisk([]),
+  );
+  const [energyForecast, setEnergyForecast] = useState(
+    BurnoutGuardian.generateEnergyForecast([], 0),
+  );
 
-  // Breathing animation for falcon mascot
-  const breatheAnim = useRef(new Animated.Value(1)).current;
+  // Pulsing falcon animation with Reanimated
+  const falconScale = useSharedValue(1);
   useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(breatheAnim, { toValue: 1.08, duration: 2000, useNativeDriver: true }),
-        Animated.timing(breatheAnim, { toValue: 1, duration: 2000, useNativeDriver: true }),
-      ])
+    falconScale.value = withRepeat(
+      withTiming(1.05, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+      -1,
+      true,
     );
-    loop.start();
-    return () => loop.stop();
-  }, [breatheAnim]);
+  }, [falconScale]);
+
+  const falconAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: falconScale.value }],
+  }));
+
+  // Format energy logs for BurnoutGuardian
+  const formattedLogs = useMemo(
+    () =>
+      energyLogs.map((log) => ({
+        level: log.level as EnergyLevel,
+        timestamp: log.timestamp,
+      })),
+    [energyLogs],
+  );
 
   useFocusEffect(
     useCallback(() => {
       setCurrentTipIndex(Math.floor(Math.random() * FALCON_TIPS.length));
-      // Update burnout indicators
-      const formattedLogs = energyLogs.map(log => ({ level: log.level as any, timestamp: log.timestamp }));
       setBurnoutIndicators(BurnoutGuardian.analyzeBurnoutRisk(formattedLogs));
-      setEnergyForecast(BurnoutGuardian.generateEnergyForecast(formattedLogs, tasks.length));
-    }, [energyLogs, tasks])
+      setEnergyForecast(
+        BurnoutGuardian.generateEnergyForecast(formattedLogs, tasks.length),
+      );
+    }, [formattedLogs, tasks.length]),
   );
+
+  useEffect(() => {
+    setBurnoutIndicators(BurnoutGuardian.analyzeBurnoutRisk(formattedLogs));
+    setEnergyForecast(
+      BurnoutGuardian.generateEnergyForecast(formattedLogs, tasks.length),
+    );
+  }, [formattedLogs, tasks.length]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false);
-      const formattedLogs = energyLogs.map(log => ({ level: (log.level as unknown as number) as any, timestamp: log.timestamp }));
       setBurnoutIndicators(BurnoutGuardian.analyzeBurnoutRisk(formattedLogs));
-      setEnergyForecast(BurnoutGuardian.generateEnergyForecast(formattedLogs, tasks.length));
+      setEnergyForecast(
+        BurnoutGuardian.generateEnergyForecast(formattedLogs, tasks.length),
+      );
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }, 1000);
-  }, [energyLogs, tasks]);
+  }, [formattedLogs, tasks.length]);
 
-  useEffect(() => {
-    const formattedLogs = energyLogs.map(log => ({ level: (log.level as unknown as number) as any, timestamp: log.timestamp }));
-    setBurnoutIndicators(BurnoutGuardian.analyzeBurnoutRisk(formattedLogs));
-    setEnergyForecast(BurnoutGuardian.generateEnergyForecast(formattedLogs, tasks.length));
-  }, [energyLogs, tasks]);
-
-  const altitudePercentage = getAltitudePercentage();
-  const streakCount = getStreakCount();
-  
   // Gamification metrics
+  const streakCount = getStreakCount();
   const altitudeLevel = GamificationEngine.getAltitudeLevel(userProgress.xp);
-  const altitudePercentageXP = GamificationEngine.getAltitudePercentage(userProgress.xp);
+  const altitudePercentageXP = GamificationEngine.getAltitudePercentage(
+    userProgress.xp,
+  );
   const xpToNextLevel = GamificationEngine.getXpToNextLevel(userProgress.xp);
+  const totalXpForBar = userProgress.xp + xpToNextLevel;
   const soarOrGlide = BurnoutGuardian.getSoarOrGlideStatus(burnoutIndicators);
+  const isSoaring = soarOrGlide.status === 'Soar';
+
+  // Estimate days to level up (rough: 50 XP/day average)
+  const daysToLevelUp = Math.max(1, Math.ceil(xpToNextLevel / 50));
+
+  // Today's study blocks
+  const todayDow = new Date().getDay();
+  const todayBlocks = useMemo(
+    () =>
+      studyBlocks
+        .filter((b) => b.dayOfWeek === todayDow)
+        .sort((a, b) => a.startTime.localeCompare(b.startTime)),
+    [studyBlocks, todayDow],
+  );
 
   const completeQuest = (questId: string) => {
-    setQuests(quests.map(q => q.id === questId ? { ...q, completed: true, progress: q.target } : q));
+    setQuests((prev) =>
+      prev.map((q) =>
+        q.id === questId ? { ...q, completed: true, progress: q.target } : q,
+      ),
+    );
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
+  const refreshTip = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setCurrentTipIndex((prev) => (prev + 1) % FALCON_TIPS.length);
+  };
+
+  // Energy color helper
+  const energyColor = (level: number): string => {
+    if (level >= 4) return colors.success;
+    if (level === 3) return colors.warning;
+    return colors.error;
+  };
+
   return (
-    <ScreenContainer className="p-4">
+    <ScreenContainer>
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
-        <View className="mb-8">
-          {/* Header */}
-          <View className="mb-6">
-            <Text className="text-3xl font-bold text-foreground dark:text-foreground-dark tracking-tight">Falcon Focus</Text>
-            <Text className="text-xs text-muted dark:text-muted-dark mt-1">By Korede Omotosho</Text>
-          </View>
-
-          {/* Altitude Meter - Gamification */}
+        {/* ─── 1. Hero Section ─── */}
+        <View
+          className="rounded-2xl p-6 mx-4 mt-4 mb-4 overflow-hidden"
+          style={{ backgroundColor: colors.secondary }}
+        >
+          {/* Teal tint overlay */}
           <View
-            className="rounded-2xl p-6 mb-6 overflow-hidden"
-            style={{
-              backgroundColor: colors.secondary,
-              shadowColor: colors.primary,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.18,
-              shadowRadius: 12,
-              elevation: 6,
-            }}
-          >
-            <View className="flex-row justify-between items-center mb-4">
-              <View>
-                <Text className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.75)' }}>Altitude</Text>
-                <Text className="text-3xl font-bold text-white mt-1">{altitudeLevel}</Text>
-              </View>
-              <Animated.Text style={{ fontSize: 48, transform: [{ scale: breatheAnim }] }}>🦅</Animated.Text>
+            className="absolute inset-0"
+            style={{ backgroundColor: colors.primary, opacity: 0.15 }}
+          />
+
+          <View className="flex-row justify-between items-center mb-4">
+            <View>
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: 'rgba(255,255,255,0.7)' }}
+              >
+                Altitude
+              </Text>
+              <Text className="text-3xl font-bold mt-1" style={{ color: '#fff' }}>
+                {altitudeLevel}
+              </Text>
             </View>
-            <View className="rounded-full h-3 overflow-hidden mb-2" style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}>
-              <View
-                className="h-full rounded-full"
-                style={{ width: `${altitudePercentageXP}%`, backgroundColor: colors.accent }}
-              />
-            </View>
-            <Text className="text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>{userProgress.xp} / {userProgress.xp + xpToNextLevel} XP</Text>
+            <Animated.View style={falconAnimatedStyle}>
+              <Text style={{ fontSize: 48 }}>🦅</Text>
+            </Animated.View>
           </View>
 
-          {/* Quick Stats */}
-          <View className="flex-row gap-3 mb-6">
-            {/* Streak */}
-            <View
-              className="flex-1 rounded-2xl p-4"
-              style={{
-                backgroundColor: colors.surface,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.04,
-                shadowRadius: 8,
-                elevation: 2,
-              }}
-            >
-              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">STREAK</Text>
-              <View className="flex-row items-baseline gap-1">
-                <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{streakCount}</Text>
-                <Text className="text-lg">🔥</Text>
-              </View>
-              <Text className="text-xs text-muted dark:text-muted-dark mt-1">days</Text>
-            </View>
-
-            {/* Feathers/XP */}
-            <View
-              className="flex-1 rounded-2xl p-4"
-              style={{
-                backgroundColor: colors.surface,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.04,
-                shadowRadius: 8,
-                elevation: 2,
-              }}
-            >
-              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">FEATHERS</Text>
-              <View className="flex-row items-baseline gap-1">
-                <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{Math.floor(userProgress.xp / 10)}</Text>
-                <Text className="text-lg">🪶</Text>
-              </View>
-              <Text className="text-xs text-muted dark:text-muted-dark mt-1">earned</Text>
-            </View>
-
-            {/* Soar or Glide */}
-            <View
-              className="flex-1 rounded-2xl p-4"
-              style={{
-                backgroundColor: colors.surface,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.04,
-                shadowRadius: 8,
-                elevation: 2,
-              }}
-            >
-              <Text className="text-xs text-muted dark:text-muted-dark font-semibold mb-2">STATUS</Text>
-              <View className="flex-row items-baseline gap-1">
-                <Text className="text-2xl font-bold text-foreground dark:text-foreground-dark">{soarOrGlide.status}</Text>
-                <Text className="text-lg">{soarOrGlide.emoji}</Text>
-              </View>
-              <Text className="text-xs text-muted dark:text-muted-dark mt-1">{burnoutIndicators.status}</Text>
-            </View>
-          </View>
-
-          {/* Soar or Glide Recommendation */}
+          {/* XP progress bar */}
           <View
-            className="rounded-2xl p-4 mb-6"
-            style={{
-              backgroundColor: soarOrGlide.status === 'Soar' ? colors.secondary + '14' : colors.primary + '14',
-              borderWidth: 1,
-              borderColor: soarOrGlide.status === 'Soar' ? colors.secondary + '30' : colors.primary + '30',
-            }}
+            className="rounded-full h-3 overflow-hidden mb-2"
+            style={{ backgroundColor: 'rgba(255,255,255,0.18)' }}
           >
-            <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark mb-1">{soarOrGlide.emoji} {soarOrGlide.status} or Glide</Text>
-            <Text className="text-xs text-muted dark:text-muted-dark leading-relaxed">{soarOrGlide.message}</Text>
-          </View>
-
-          {/* Action Buttons */}
-          <View className="flex-row gap-3 mb-6">
-            <Pressable
-              className="flex-1 rounded-2xl py-4 active:opacity-80"
+            <View
+              className="h-full rounded-full"
               style={{
+                width: `${altitudePercentageXP}%`,
                 backgroundColor: colors.primary,
-                shadowColor: colors.primary,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 4,
               }}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push('/focus');
-              }}
-            >
-              <Text className="text-center font-bold text-white text-base">Start Focus</Text>
-            </Pressable>
-            <Pressable
-              className="flex-1 rounded-2xl py-4 active:opacity-80"
-              style={{
-                backgroundColor: colors.surface,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.04,
-                shadowRadius: 6,
-                elevation: 2,
-              }}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push('/planner');
-              }}
-            >
-              <Text className="text-center font-bold text-foreground dark:text-foreground-dark text-base">Add Task</Text>
-            </Pressable>
+            />
           </View>
+          <Text className="text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            {userProgress.xp} / {totalXpForBar} XP
+          </Text>
+          <Text className="text-xs mt-1" style={{ color: colors.muted }}>
+            Level up in ~{daysToLevelUp} day{daysToLevelUp !== 1 ? 's' : ''}
+          </Text>
+        </View>
 
-          {/* Daily Quests */}
-          <View className="mb-6">
-            <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Daily Quests</Text>
-            <View className="gap-3">
-              {quests.map((quest) => (
-                <Pressable
-                  key={quest.id}
-                  className="rounded-2xl p-4 active:opacity-90"
-                  style={{
-                    backgroundColor: quest.completed ? colors.success + '12' : colors.surface,
-                    borderWidth: 1,
-                    borderColor: quest.completed ? colors.success + '30' : colors.border,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.03,
-                    shadowRadius: 4,
-                    elevation: 1,
-                  }}
-                  onPress={() => !quest.completed && completeQuest(quest.id)}
+        {/* ─── 2. Metrics Row ─── */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}
+          className="mb-4"
+        >
+          {refreshing ? (
+            <>
+              <SkeletonStatCard />
+              <SkeletonStatCard />
+              <SkeletonStatCard />
+            </>
+          ) : (
+            <>
+              {/* Streak */}
+              <View
+                className="rounded-2xl p-3 items-center justify-center"
+                style={{
+                  width: 100,
+                  backgroundColor: colors.surface,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              >
+                <Text style={{ fontSize: 22 }}>🔥</Text>
+                <Text
+                  className="text-xl font-bold mt-1"
+                  style={{ color: colors.foreground }}
                 >
-                  <View className="flex-row justify-between items-start">
-                    <View className="flex-1">
-                      <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">{quest.title}</Text>
-                      <Text className="text-xs text-muted dark:text-muted-dark mt-1">{quest.description}</Text>
-                    </View>
-                    <View className="items-end">
-                      <Text className="text-xs font-bold" style={{ color: colors.accent }}>+{quest.reward} XP</Text>
-                      {quest.completed && <Text className="text-lg mt-1">✓</Text>}
-                    </View>
-                  </View>
-                  {!quest.completed && (
-                    <View className="rounded-full h-1.5 mt-3 overflow-hidden" style={{ backgroundColor: colors.border }}>
-                      <View
-                        className="h-full rounded-full"
-                        style={{ width: `${(quest.progress / quest.target) * 100}%`, backgroundColor: colors.primary }}
-                      />
-                    </View>
-                  )}
-                </Pressable>
-              ))}
-            </View>
-          </View>
+                  {streakCount}
+                </Text>
+                <Text style={{ fontSize: 11, color: colors.muted }}>Streak</Text>
+              </View>
 
-          {/* Falcon Coach Tip */}
-          <View
-            className="rounded-2xl p-4 mb-6"
+              {/* Feathers */}
+              <View
+                className="rounded-2xl p-3 items-center justify-center"
+                style={{
+                  width: 100,
+                  backgroundColor: colors.surface,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              >
+                <Text style={{ fontSize: 22 }}>🪶</Text>
+                <Text
+                  className="text-xl font-bold mt-1"
+                  style={{ color: colors.foreground }}
+                >
+                  {Math.floor(userProgress.xp / 10)}
+                </Text>
+                <Text style={{ fontSize: 11, color: colors.muted }}>Feathers</Text>
+              </View>
+
+              {/* Status */}
+              <View
+                className="rounded-2xl p-3 items-center justify-center"
+                style={{
+                  width: 100,
+                  backgroundColor: colors.surface,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              >
+                <Text style={{ fontSize: 22 }}>⚡</Text>
+                <Text
+                  className="text-xl font-bold mt-1"
+                  style={{ color: colors.foreground }}
+                >
+                  {soarOrGlide.status}
+                </Text>
+                <Text style={{ fontSize: 11, color: colors.muted }}>Status</Text>
+              </View>
+            </>
+          )}
+        </ScrollView>
+
+        {/* ─── 3. Soar or Glide Card ─── */}
+        <View
+          className="rounded-2xl p-5 mx-4 mb-4"
+          style={{
+            backgroundColor: isSoaring ? colors.primary : colors.secondary,
+          }}
+        >
+          <View className="flex-row items-center mb-2">
+            <Text style={{ fontSize: 24 }}>{isSoaring ? '🦅' : '🕊️'}</Text>
+            <Text
+              className="text-lg font-bold ml-2"
+              style={{ color: isSoaring ? '#fff' : colors.muted }}
+            >
+              {isSoaring ? 'Soaring' : 'Gliding'}
+            </Text>
+          </View>
+          <Text
+            className="text-sm leading-relaxed mb-3"
+            style={{ color: isSoaring ? 'rgba(255,255,255,0.9)' : colors.muted }}
+          >
+            {soarOrGlide.message}
+          </Text>
+          <Pressable
+            className="rounded-xl py-2.5 px-4 self-start active:opacity-80"
             style={{
-              backgroundColor: colors.secondary + '10',
-              borderWidth: 1,
-              borderColor: colors.secondary + '25',
+              backgroundColor: isSoaring
+                ? 'rgba(255,255,255,0.2)'
+                : colors.primary,
+            }}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push('/energy' as never);
             }}
           >
-            <View className="flex-row gap-3 mb-2">
-              <Animated.Text style={{ fontSize: 24, transform: [{ scale: breatheAnim }] }}>🦅</Animated.Text>
-              <Text className="text-sm font-bold flex-1" style={{ color: colors.accent }}>Falcon Coach Tip</Text>
-            </View>
-            <Text className="text-sm text-foreground dark:text-foreground-dark leading-relaxed">
-              {FALCON_TIPS[currentTipIndex]}
+            <Text className="text-sm font-semibold" style={{ color: '#fff' }}>
+              Log Energy
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* ─── 4. Daily Quests Section ─── */}
+        <View className="mx-4 mb-4">
+          <View className="flex-row justify-between items-center mb-3">
+            <Text className="text-base font-bold" style={{ color: colors.foreground }}>
+              Daily Quests
+            </Text>
+            <Text style={{ fontSize: 12, color: colors.muted }}>
+              Reset in {getQuestResetCountdown()}
             </Text>
           </View>
 
-          {/* Energy Forecast - Burnout Guardian */}
-          <View
-            className="rounded-2xl p-4 mb-6"
+          {refreshing ? (
+            <View className="gap-3">
+              <SkeletonCard />
+              <SkeletonCard />
+            </View>
+          ) : (
+            <View className="gap-3">
+              {quests.map((quest, idx) => {
+                const dotColor = QUEST_COLORS[idx % QUEST_COLORS.length];
+                return (
+                  <Pressable
+                    key={quest.id}
+                    className="rounded-2xl p-4 active:opacity-90"
+                    style={{
+                      backgroundColor: colors.surface,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                      opacity: quest.completed ? 0.6 : 1,
+                    }}
+                    onPress={() => {
+                      if (!quest.completed) {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        completeQuest(quest.id);
+                      }
+                    }}
+                  >
+                    <View className="flex-row items-center">
+                      {/* Colored circle */}
+                      <View
+                        className="rounded-full mr-3 items-center justify-center"
+                        style={{
+                          width: 32,
+                          height: 32,
+                          backgroundColor: quest.completed
+                            ? colors.success
+                            : dotColor,
+                        }}
+                      >
+                        {quest.completed ? (
+                          <Text
+                            className="text-sm font-bold"
+                            style={{ color: '#fff' }}
+                          >
+                            ✓
+                          </Text>
+                        ) : (
+                          <Text
+                            className="text-xs font-bold"
+                            style={{ color: '#fff' }}
+                          >
+                            {quest.progress}/{quest.target}
+                          </Text>
+                        )}
+                      </View>
+
+                      <View className="flex-1">
+                        <Text
+                          className="text-sm font-semibold"
+                          style={{ color: colors.foreground }}
+                        >
+                          {quest.title}
+                        </Text>
+                        <Text
+                          className="text-xs mt-0.5"
+                          style={{ color: colors.muted }}
+                        >
+                          {quest.description}
+                        </Text>
+                      </View>
+
+                      {/* XP badge pill */}
+                      <View
+                        className="rounded-full px-2.5 py-1 ml-2"
+                        style={{ backgroundColor: colors.accent + '22' }}
+                      >
+                        <Text
+                          className="text-xs font-bold"
+                          style={{ color: colors.accent }}
+                        >
+                          +{quest.reward} XP
+                        </Text>
+                      </View>
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
+        </View>
+
+        {/* ─── 5. Falcon Coach Tip Card ─── */}
+        <View
+          className="rounded-2xl p-4 mx-4 mb-4"
+          style={{
+            backgroundColor: colors.accent + '1A',
+            borderWidth: 1,
+            borderColor: colors.accent + '4D',
+          }}
+        >
+          {/* Refresh tip button – top right */}
+          <Pressable
+            className="absolute top-3 right-3 rounded-full items-center justify-center active:opacity-70"
             style={{
-              backgroundColor: colors.surface,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.04,
-              shadowRadius: 8,
-              elevation: 2,
+              width: 30,
+              height: 30,
+              backgroundColor: colors.accent + '22',
+            }}
+            onPress={refreshTip}
+          >
+            <Text style={{ fontSize: 14 }}>🔄</Text>
+          </Pressable>
+
+          <View className="flex-row items-center mb-2 pr-8">
+            <Text style={{ fontSize: 24 }}>🦅</Text>
+            <Text
+              className="text-sm font-bold ml-2"
+              style={{ color: colors.accent }}
+            >
+              Falcon Coach Tip
+            </Text>
+          </View>
+          <Text
+            className="text-sm leading-relaxed mb-2"
+            style={{ color: colors.foreground }}
+          >
+            {FALCON_TIPS[currentTipIndex]}
+          </Text>
+          <Pressable
+            className="self-start active:opacity-70"
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push('/focus' as never);
             }}
           >
-            <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Energy Forecast</Text>
-            <View
-              className="rounded-xl p-3"
-              style={{
-                backgroundColor:
-                  burnoutIndicators.riskLevel === 'high'
-                    ? colors.error + '12'
-                    : burnoutIndicators.riskLevel === 'medium'
-                    ? colors.warning + '12'
-                    : colors.success + '12',
-                borderWidth: 1,
-                borderColor:
-                  burnoutIndicators.riskLevel === 'high'
-                    ? colors.error + '25'
-                    : burnoutIndicators.riskLevel === 'medium'
-                    ? colors.warning + '25'
-                    : colors.success + '25',
+            <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
+              Act on this →
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* ─── 6. Today's Schedule ─── */}
+        <View className="mx-4 mb-4">
+          <Text
+            className="text-base font-bold mb-3"
+            style={{ color: colors.foreground }}
+          >
+            {"Today's Schedule"}
+          </Text>
+
+          {refreshing ? (
+            <View className="gap-3">
+              <SkeletonCard />
+              <SkeletonCard />
+            </View>
+          ) : todayBlocks.length === 0 ? (
+            <EmptyState
+              emoji="📅"
+              title="No sessions today"
+              subtitle="Add study blocks to fill your schedule."
+              actionLabel="Add Session"
+              onAction={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push('/planner');
               }}
-            >
-              <Text
-                className="text-xs font-semibold"
-                style={{
-                  color:
-                    burnoutIndicators.riskLevel === 'high'
-                      ? colors.error
-                      : burnoutIndicators.riskLevel === 'medium'
-                      ? colors.warning
-                      : colors.success,
+            />
+          ) : (
+            <View>
+              {todayBlocks.map((block, idx) => (
+                <View key={block.id} className="flex-row mb-3">
+                  {/* Timeline line */}
+                  <View className="items-center mr-3" style={{ width: 20 }}>
+                    <View
+                      className="rounded-full"
+                      style={{
+                        width: 10,
+                        height: 10,
+                        backgroundColor: block.color || colors.primary,
+                        marginTop: 6,
+                      }}
+                    />
+                    {idx < todayBlocks.length - 1 && (
+                      <View
+                        className="flex-1"
+                        style={{
+                          width: 2,
+                          backgroundColor: colors.border,
+                          marginTop: 4,
+                        }}
+                      />
+                    )}
+                  </View>
+
+                  {/* Session card */}
+                  <View
+                    className="flex-1 rounded-2xl p-4"
+                    style={{
+                      backgroundColor: colors.surface,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                    }}
+                  >
+                    <Text
+                      className="text-sm font-semibold"
+                      style={{ color: colors.foreground }}
+                    >
+                      {block.title}
+                    </Text>
+                    <Text className="text-xs mt-1" style={{ color: colors.muted }}>
+                      {formatTime(block.startTime)} – {formatTime(block.endTime)}
+                    </Text>
+                    {block.subject ? (
+                      <Text className="text-xs mt-0.5" style={{ color: colors.muted }}>
+                        {block.subject}
+                      </Text>
+                    ) : null}
+                  </View>
+                </View>
+              ))}
+
+              {/* Add Session ghost button */}
+              <Pressable
+                className="rounded-2xl py-3 mt-1 items-center active:opacity-70"
+                style={{ borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed' }}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  router.push('/planner');
                 }}
               >
-                {energyForecast.recommendation}
-              </Text>
+                <Text className="text-sm font-semibold" style={{ color: colors.primary }}>
+                  + Add Session
+                </Text>
+              </Pressable>
             </View>
-            <View className="flex-row gap-3 mt-3">
-              <View className="flex-1">
-                <Text className="text-xs text-muted dark:text-muted-dark mb-1">Today</Text>
-                <View className="flex-row gap-1">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <View
-                      key={i}
-                      className="flex-1 h-2 rounded-full"
-                      style={{ backgroundColor: i <= energyForecast.today ? colors.success : colors.border }}
-                    />
-                  ))}
-                </View>
-              </View>
-              <View className="flex-1">
-                <Text className="text-xs text-muted dark:text-muted-dark mb-1">Tomorrow</Text>
-                <View className="flex-row gap-1">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <View
-                      key={i}
-                      className="flex-1 h-2 rounded-full"
-                      style={{ backgroundColor: i <= energyForecast.tomorrow ? colors.primary : colors.border }}
-                    />
-                  ))}
-                </View>
-              </View>
-            </View>
-          </View>
+          )}
+        </View>
 
-          {/* Today's Schedule */}
-          <View className="mb-6">
-            <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Today's Schedule</Text>
-            {refreshing ? (
-              <View className="gap-3">
-                <SkeletonCard />
-                <SkeletonCard />
-                <SkeletonCard />
-              </View>
-            ) : (
-              <View className="gap-3">
-                <View
-                  className="rounded-2xl p-4"
-                  style={{
-                    backgroundColor: colors.surface,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.03,
-                    shadowRadius: 4,
-                    elevation: 1,
-                  }}
-                >
-                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Mathematics Lecture</Text>
-                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">10:00 AM - 11:30 AM</Text>
-                </View>
-                <View
-                  className="rounded-2xl p-4"
-                  style={{
-                    backgroundColor: colors.surface,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.03,
-                    shadowRadius: 4,
-                    elevation: 1,
-                  }}
-                >
-                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Chemistry Study</Text>
-                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">2:00 PM - 3:30 PM</Text>
-                </View>
-                <View
-                  className="rounded-2xl p-4"
-                  style={{
-                    backgroundColor: colors.surface,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.03,
-                    shadowRadius: 4,
-                    elevation: 1,
-                  }}
-                >
-                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Review Session</Text>
-                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">5:00 PM - 6:00 PM</Text>
-                </View>
-              </View>
-            )}
-          </View>
-
-          {/* Motivational Quote */}
+        {/* ─── 7. Energy Forecast Row ─── */}
+        <View className="flex-row gap-3 mx-4 mb-6">
+          {/* Today */}
           <View
-            className="rounded-2xl p-5 items-center"
+            className="flex-1 rounded-2xl p-4"
             style={{
-              backgroundColor: colors.secondary + '08',
+              backgroundColor: colors.surface,
               borderWidth: 1,
-              borderColor: colors.accent + '20',
+              borderColor: colors.border,
             }}
           >
-            <Text className="text-sm italic text-foreground dark:text-foreground-dark text-center leading-relaxed">
-              "Every soar begins with a single flap of the wings."
+            <Text className="text-xs font-semibold mb-2" style={{ color: colors.muted }}>
+              Today
+            </Text>
+            <Text style={{ fontSize: 28 }}>{getEnergyEmoji(energyForecast.today)}</Text>
+            <Text
+              className="text-sm font-bold mt-1"
+              style={{ color: energyColor(energyForecast.today) }}
+            >
+              {getEnergyLabel(energyForecast.today)}
+            </Text>
+            <Text className="text-xs mt-0.5" style={{ color: colors.muted }}>
+              Energy {energyForecast.today}/5
+            </Text>
+          </View>
+
+          {/* Tomorrow */}
+          <View
+            className="flex-1 rounded-2xl p-4"
+            style={{
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+          >
+            <Text className="text-xs font-semibold mb-2" style={{ color: colors.muted }}>
+              Tomorrow
+            </Text>
+            <Text style={{ fontSize: 28 }}>
+              {getEnergyEmoji(energyForecast.tomorrow)}
+            </Text>
+            <Text
+              className="text-sm font-bold mt-1"
+              style={{ color: energyColor(energyForecast.tomorrow) }}
+            >
+              {getEnergyLabel(energyForecast.tomorrow)}
+            </Text>
+            <Text className="text-xs mt-0.5" style={{ color: colors.muted }}>
+              Energy {energyForecast.tomorrow}/5
             </Text>
           </View>
         </View>
