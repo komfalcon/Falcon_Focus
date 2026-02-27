@@ -1,16 +1,20 @@
-import { ScrollView, Text, View, TouchableOpacity, Switch } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Switch, Alert } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useColors } from '@/hooks/use-colors';
 import { useState, useEffect } from 'react';
 import { useThemeContext } from '@/lib/theme-provider';
 import { PushNotificationsService } from '@/lib/push-notifications-service';
+import { useAuthContext } from '@/lib/auth/auth-context';
+import { useRouter } from 'expo-router';
 import * as Linking from 'expo-linking';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
   const colors = useColors();
   const { setColorScheme } = useThemeContext();
+  const { user, signOut } = useAuthContext();
+  const router = useRouter();
   const [isDarkMode, setIsDarkMode] = useState(colorScheme === 'dark');
   const [pushEnabled, setPushEnabled] = useState(true);
   const [alarmsEnabled, setAlarmsEnabled] = useState(true);
@@ -37,6 +41,41 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="mb-8">
           <Text className="text-3xl font-bold text-foreground dark:text-foreground-dark mb-6 tracking-tight">Settings</Text>
+
+          {/* Profile Card */}
+          {user ? (
+            <View
+              className="rounded-2xl p-5 mb-8 flex-row items-center"
+              style={{
+                backgroundColor: colors.primary + '14',
+                borderWidth: 1,
+                borderColor: colors.primary + '30',
+              }}
+            >
+              <View
+                style={{
+                  width: 52,
+                  height: 52,
+                  borderRadius: 26,
+                  backgroundColor: colors.primary,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginRight: 14,
+                }}
+              >
+                <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>
+                  {user.name?.charAt(0)?.toUpperCase() ?? '?'}
+                </Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-bold text-foreground dark:text-foreground-dark">{user.name}</Text>
+                <Text className="text-xs text-muted dark:text-muted-dark mt-1">{user.email}</Text>
+                <Text className="text-xs font-semibold mt-1" style={{ color: colors.accent }}>
+                  {user.level ?? 'Fledgling'} • {user.feathers ?? 0} Feathers
+                </Text>
+              </View>
+            </View>
+          ) : null}
 
           {/* Appearance */}
           <View className="mb-8">
@@ -185,6 +224,9 @@ export default function SettingsScreen() {
                   shadowRadius: 4,
                   elevation: 1,
                 }}
+                onPress={() => {
+                  Alert.alert('Export Data', 'Your study data export will be prepared. This feature is coming soon.');
+                }}
               >
                 <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Export Data</Text>
                 <Text className="text-xs text-muted dark:text-muted-dark mt-1">Download your study data</Text>
@@ -199,6 +241,9 @@ export default function SettingsScreen() {
                   shadowOpacity: 0.03,
                   shadowRadius: 4,
                   elevation: 1,
+                }}
+                onPress={() => {
+                  Linking.openURL('https://falconfocus.app/privacy');
                 }}
               >
                 <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Privacy Policy</Text>
@@ -240,6 +285,42 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
               </View>
             </View>
+          </View>
+
+          {/* Account */}
+          <View className="mb-8">
+            <Text className="text-xs font-bold uppercase mb-4 tracking-wider" style={{ color: colors.error }}>Account</Text>
+
+            <TouchableOpacity
+              className="rounded-2xl p-4 active:opacity-80"
+              style={{
+                backgroundColor: colors.error + '10',
+                borderWidth: 1,
+                borderColor: colors.error + '30',
+              }}
+              onPress={() => {
+                Alert.alert(
+                  'Sign Out',
+                  'Are you sure you want to sign out?',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Sign Out',
+                      style: 'destructive',
+                      onPress: async () => {
+                        await signOut();
+                        router.replace('/(auth)/sign-in');
+                      },
+                    },
+                  ],
+                );
+              }}
+            >
+              <Text className="text-sm font-bold" style={{ color: colors.error }}>Sign Out</Text>
+              <Text className="text-xs mt-1" style={{ color: colors.error + '99' }}>
+                You'll need to sign in again to access your data
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {/* Footer */}
