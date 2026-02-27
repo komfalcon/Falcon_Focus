@@ -57,8 +57,8 @@ export default function LearnScreen() {
   }, [activeTab, indicatorX]);
 
   const indicatorStyle = useAnimatedStyle(() => ({
-    left: `${indicatorX.value * TAB_WIDTH_FRACTION * 100}%` as unknown as number,
-    width: `${TAB_WIDTH_FRACTION * 100}%` as unknown as number,
+    left: `${indicatorX.value * TAB_WIDTH_FRACTION * 100}%`,
+    width: `${TAB_WIDTH_FRACTION * 100}%`,
   }));
 
   const loadData = useCallback(async () => {

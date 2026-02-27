@@ -33,6 +33,7 @@ export default function NoteEditorScreen() {
   const [subject, setSubject] = useState('Other');
   const [existingNote, setExistingNote] = useState<Note | null>(null);
   const lastSavedRef = useRef<number>(0);
+  const isDirtyRef = useRef(false);
 
   const loadNote = useCallback(async () => {
     if (!noteId) return;
@@ -90,15 +91,16 @@ export default function NoteEditorScreen() {
 
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       lastSavedRef.current = now;
+      isDirtyRef.current = false;
     } catch (e) {
       console.error('Error saving note:', e);
     }
   }, [title, content, subject, existingNote]);
 
-  // Auto-save every 30 seconds
+  // Auto-save every 30 seconds if content changed
   useEffect(() => {
     const interval = setInterval(() => {
-      if (title.trim() || content.trim()) {
+      if (isDirtyRef.current && (title.trim() || content.trim())) {
         saveNote();
       }
     }, 30000);
@@ -152,7 +154,7 @@ export default function NoteEditorScreen() {
             placeholder="Note title"
             placeholderTextColor={colors.muted}
             value={title}
-            onChangeText={setTitle}
+            onChangeText={(text) => { setTitle(text); isDirtyRef.current = true; }}
             returnKeyType="next"
           />
 
@@ -177,6 +179,7 @@ export default function NoteEditorScreen() {
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     setSubject(s);
+                    isDirtyRef.current = true;
                   }}
                 >
                   <Text
@@ -201,7 +204,7 @@ export default function NoteEditorScreen() {
             placeholder="Start writing..."
             placeholderTextColor={colors.muted}
             value={content}
-            onChangeText={setContent}
+            onChangeText={(text) => { setContent(text); isDirtyRef.current = true; }}
             multiline
             scrollEnabled={false}
           />
