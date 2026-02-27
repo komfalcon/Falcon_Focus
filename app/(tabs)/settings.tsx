@@ -618,7 +618,14 @@ export default function SettingsScreen() {
                         text: 'Clear',
                         style: 'destructive',
                         onPress: async () => {
-                          await AsyncStorage.clear();
+                          const allKeys = await AsyncStorage.getAllKeys();
+                          const settingsKeys = Object.values(KEYS) as string[];
+                          const cacheKeys = allKeys.filter(
+                            (k) => !settingsKeys.includes(k),
+                          );
+                          if (cacheKeys.length > 0) {
+                            await AsyncStorage.multiRemove(cacheKeys);
+                          }
                           Alert.alert('Done', 'Cache cleared successfully.');
                         },
                       },
