@@ -1,6 +1,7 @@
 import { ScrollView, Text, View, Pressable, Alert, Modal, TextInput } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { EmptyState } from '@/components/empty-state';
+import { SkeletonCard } from '@/components/skeleton';
 import { useColors } from '@/hooks/use-colors';
 import { useState, useEffect, useCallback, useLayoutEffect } from 'react';
 import { useRouter } from 'expo-router';
@@ -48,6 +49,7 @@ export default function LearnScreen() {
   const [deckModalVisible, setDeckModalVisible] = useState(false);
   const [newDeckTitle, setNewDeckTitle] = useState('');
   const [newDeckSubject, setNewDeckSubject] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const indicatorX = useSharedValue(0);
   const TAB_WIDTH_FRACTION = 0.5;
@@ -71,6 +73,8 @@ export default function LearnScreen() {
       }
     } catch (e) {
       console.error('Error loading learn data:', e);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -215,6 +219,15 @@ export default function LearnScreen() {
             </Pressable>
           </View>
 
+          {/* Loading Skeleton */}
+          {isLoading ? (
+            <View className="gap-3">
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </View>
+          ) : (
+          <>
           {/* Notes Section */}
           {activeTab === 'notes' && (
             <View>
@@ -389,6 +402,8 @@ export default function LearnScreen() {
                 </View>
               )}
             </View>
+          )}
+          </>
           )}
         </View>
       </ScrollView>
