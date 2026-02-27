@@ -24,10 +24,15 @@ export const OWNER_OPEN_ID = env.ownerId;
 export const OWNER_NAME = env.ownerName;
 export const API_BASE_URL = env.apiBaseUrl;
 
+const PRODUCTION_API_URL = "https://zonal-megen-falkyblinders-09833153.koyeb.app";
+
 /**
  * Get the API base URL, deriving from current hostname if not set.
  * Metro runs on 8081, API server runs on 3000.
  * URL pattern: https://PORT-sandboxid.region.domain
+ *
+ * In __DEV__ mode falls back to localhost:3000; in production falls back
+ * to the deployed Koyeb backend.
  */
 export function getApiBaseUrl(): string {
   // If API_BASE_URL is set, use it
@@ -45,8 +50,11 @@ export function getApiBaseUrl(): string {
     }
   }
 
-  // Fallback to empty (will use relative URL)
-  return "";
+  // Fallback: dev uses localhost, production uses deployed backend
+  if (typeof __DEV__ !== "undefined" && __DEV__) {
+    return "http://localhost:3000";
+  }
+  return PRODUCTION_API_URL;
 }
 
 export const SESSION_TOKEN_KEY = "app_session_token";

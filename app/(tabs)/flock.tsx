@@ -192,27 +192,81 @@ export default function FlockScreen() {
 
         {/* Leaderboard */}
         <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Leaderboard</Text>
-        <View
-          className="rounded-2xl p-5 mb-6"
-          style={{
-            backgroundColor: colors.accent + '10',
-            borderWidth: 1,
-            borderColor: colors.accent + '30',
-            shadowColor: colors.accent,
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.08,
-            shadowRadius: 6,
-            elevation: 2,
-          }}
-        >
-          <View className="flex-row justify-between items-center mb-3">
-            <Text className="font-bold text-foreground dark:text-foreground-dark">Top Flyer</Text>
-            <Text className="text-2xl">🏆</Text>
-          </View>
-          <Text className="text-lg font-bold" style={{ color: colors.accent }}>{stats.topMember.name}</Text>
-          <Text className="text-sm text-muted dark:text-muted-dark mt-2">
-            {stats.topMember.xp} XP • {stats.topMember.altitude} Altitude
-          </Text>
+        <View className="gap-2 mb-6">
+          {[...flock.members]
+            .sort((a: { xp: number }, b: { xp: number }) => b.xp - a.xp)
+            .map((member: { id: string; name: string; xp: number; altitude: string; streak: number }, index: number) => {
+              const isTop3 = index < 3;
+              const rankColors = ['#FFB81C', '#C0C0C0', '#CD7F32'];
+              const rankEmojis = ['🥇', '🥈', '🥉'];
+              const rankBg = isTop3 ? rankColors[index] + '18' : colors.surface;
+              const rankBorder = isTop3 ? rankColors[index] + '40' : 'transparent';
+
+              return (
+                <View
+                  key={member.id}
+                  className="rounded-2xl p-4 flex-row items-center"
+                  style={{
+                    backgroundColor: rankBg,
+                    borderWidth: isTop3 ? 1.5 : 0,
+                    borderColor: rankBorder,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.03,
+                    shadowRadius: 4,
+                    elevation: 1,
+                  }}
+                >
+                  {/* Rank */}
+                  <View style={{ width: 36, alignItems: 'center', marginRight: 12 }}>
+                    {isTop3 ? (
+                      <Text style={{ fontSize: 22 }}>{rankEmojis[index]}</Text>
+                    ) : (
+                      <Text className="text-sm font-bold text-muted dark:text-muted-dark">#{index + 1}</Text>
+                    )}
+                  </View>
+
+                  {/* Avatar */}
+                  <View
+                    style={{
+                      width: isTop3 && index === 0 ? 44 : 38,
+                      height: isTop3 && index === 0 ? 44 : 38,
+                      borderRadius: 22,
+                      backgroundColor: isTop3 ? rankColors[index] + '50' : colors.primary + '30',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginRight: 12,
+                    }}
+                  >
+                    <Text style={{ fontWeight: 'bold', fontSize: isTop3 && index === 0 ? 16 : 14, color: colors.foreground }}>
+                      {member.name.charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+
+                  {/* Info */}
+                  <View className="flex-1">
+                    <Text
+                      className="font-bold text-foreground dark:text-foreground-dark"
+                      style={{ fontSize: isTop3 && index === 0 ? 16 : 14 }}
+                    >
+                      {member.name}
+                    </Text>
+                    <View className="flex-row gap-3 mt-1">
+                      <Text className="text-xs" style={{ color: colors.primary }}>{member.altitude}</Text>
+                      <Text className="text-xs text-muted dark:text-muted-dark">{member.streak}🔥</Text>
+                    </View>
+                  </View>
+
+                  {/* XP */}
+                  <Text
+                    className="font-bold"
+                    style={{ fontSize: isTop3 ? 16 : 14, color: isTop3 ? rankColors[index] : colors.accent }}
+                  >
+                    {member.xp} XP
+                  </Text>
+                </View>
+              );
+            })}
         </View>
 
         {/* Accountability Nudge */}
