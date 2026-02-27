@@ -88,6 +88,7 @@ export function registerOAuthRoutes(app: Express) {
       const frontendUrl =
         process.env.EXPO_WEB_PREVIEW_URL ||
         process.env.EXPO_PACKAGER_PROXY_URL ||
+        process.env.APP_URL ||
         "http://localhost:8081";
       res.redirect(302, frontendUrl);
     } catch (error) {

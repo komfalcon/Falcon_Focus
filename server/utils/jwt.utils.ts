@@ -1,12 +1,12 @@
 import { SignJWT, jwtVerify } from "jose";
+import { ENV } from "../_core/env";
 
 const getSecret = (secret: string) => new TextEncoder().encode(secret);
 
-const JWT_SECRET = process.env.JWT_SECRET || "falcon-focus-dev-secret-change-in-production";
-const JWT_REFRESH_SECRET =
-  process.env.JWT_REFRESH_SECRET || "falcon-focus-refresh-secret-change-in-production";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
-const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || "30d";
+const JWT_SECRET = ENV.jwtSecret;
+const JWT_REFRESH_SECRET = ENV.jwtRefreshSecret;
+const JWT_EXPIRES_IN = ENV.jwtExpiresIn;
+const JWT_REFRESH_EXPIRES_IN = ENV.jwtRefreshExpiresIn;
 
 function parseDuration(duration: string): number {
   const match = duration.match(/^(\d+)([smhd])$/);

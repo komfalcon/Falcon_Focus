@@ -43,6 +43,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 
   extra: {
     ...config.extra,
+    // API
+    apiUrl: process.env.API_URL ?? 'http://localhost:3000',
+    // Google OAuth
+    googleClientId: process.env.GOOGLE_CLIENT_ID ?? '',
+    googleRedirectUri: process.env.GOOGLE_REDIRECT_URI ?? '',
+    // App
+    appUrl: process.env.APP_URL ?? 'http://localhost:8081',
     eas: {
       projectId: "d087eff4-2b45-44b4-b4c9-3d3a7dbc494f"
     }
