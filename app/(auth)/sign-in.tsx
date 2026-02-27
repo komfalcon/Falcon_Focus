@@ -50,7 +50,7 @@ export default function SignInScreen() {
     } else if (response?.type === "cancel" || response?.type === "dismiss") {
       setIsGoogleLoading(false);
     }
-  }, [response]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [response, signInWithGoogle, redirectUri, request, router]);
 
   const handleSignIn = async () => {
     if (!email.trim() || !password.trim()) {
@@ -73,9 +73,11 @@ export default function SignInScreen() {
 
   const handleGooglePress = () => {
     setError("");
-    setIsGoogleLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    promptAsync();
+    promptAsync().catch(() => {
+      // If promptAsync itself throws, ensure loading state is cleared
+      setIsGoogleLoading(false);
+    });
   };
 
   return (
