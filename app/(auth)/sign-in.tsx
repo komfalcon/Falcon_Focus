@@ -9,19 +9,48 @@ import {
   Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { useAuth } from "@/lib/auth/use-auth";
+import { useGoogleAuth } from "@/lib/auth/google-auth";
+import * as Haptics from "expo-haptics";
 
 export default function SignInScreen() {
   const router = useRouter();
   const colors = useColors();
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
+  const { request, response, promptAsync, redirectUri } = useGoogleAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Handle Google OAuth response
+  useEffect(() => {
+    if (response?.type === "success") {
+      const code = response.params?.code;
+      if (code) {
+        setIsGoogleLoading(true);
+        signInWithGoogle(code, redirectUri, request?.codeVerifier ?? undefined)
+          .then(() => {
+            router.replace("/(tabs)");
+          })
+          .catch((err: unknown) => {
+            setError(err instanceof Error ? err.message : "Google sign in failed. Please try again.");
+          })
+          .finally(() => {
+            setIsGoogleLoading(false);
+          });
+      }
+    } else if (response?.type === "error") {
+      setError(response.error?.message || "Google sign in failed. Please try again.");
+      setIsGoogleLoading(false);
+    } else if (response?.type === "cancel" || response?.type === "dismiss") {
+      setIsGoogleLoading(false);
+    }
+  }, [response, signInWithGoogle, redirectUri, request, router]);
 
   const handleSignIn = async () => {
     if (!email.trim() || !password.trim()) {
@@ -29,6 +58,7 @@ export default function SignInScreen() {
       return;
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setError("");
     setIsLoading(true);
     try {
@@ -39,6 +69,15 @@ export default function SignInScreen() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGooglePress = () => {
+    setError("");
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    promptAsync().catch(() => {
+      // If promptAsync itself throws, ensure loading state is cleared
+      setIsGoogleLoading(false);
+    });
   };
 
   return (
@@ -53,7 +92,24 @@ export default function SignInScreen() {
       >
         {/* Logo & Header */}
         <View style={{ alignItems: "center", marginBottom: 40 }}>
-          <Text style={{ fontSize: 48, marginBottom: 12 }}>🦅</Text>
+          <View
+            style={{
+              width: 88,
+              height: 88,
+              borderRadius: 24,
+              backgroundColor: colors.secondary,
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 16,
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.3,
+              shadowRadius: 16,
+              elevation: 8,
+            }}
+          >
+            <Text style={{ fontSize: 44 }}>🦅</Text>
+          </View>
           <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
             Falcon Focus
           </Text>
@@ -143,7 +199,7 @@ export default function SignInScreen() {
 
           <TouchableOpacity
             onPress={handleSignIn}
-            disabled={isLoading}
+            disabled={isLoading || isGoogleLoading}
             style={{
               backgroundColor: colors.primary,
               borderRadius: 14,
@@ -166,17 +222,58 @@ export default function SignInScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => router.push("/(auth)/forgot-password")}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push("/(auth)/forgot-password");
+            }}
             style={{ alignItems: "center", paddingVertical: 8 }}
           >
             <Text style={{ color: colors.primary, fontSize: 13 }}>Forgot password?</Text>
+          </TouchableOpacity>
+
+          {/* Divider */}
+          <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 16 }}>
+            <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+            <Text style={{ marginHorizontal: 12, color: colors.muted, fontSize: 12 }}>or continue with</Text>
+            <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+          </View>
+
+          {/* Google Sign-In Button */}
+          <TouchableOpacity
+            onPress={handleGooglePress}
+            disabled={!request || isLoading || isGoogleLoading}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              borderWidth: 1.5,
+              borderColor: colors.border,
+              borderRadius: 14,
+              paddingVertical: 14,
+              backgroundColor: colors.background,
+              opacity: !request || isGoogleLoading ? 0.7 : 1,
+            }}
+          >
+            {isGoogleLoading ? (
+              <ActivityIndicator color={colors.foreground} />
+            ) : (
+              <>
+                <Text style={{ fontSize: 18, marginRight: 10 }}>G</Text>
+                <Text style={{ fontSize: 15, fontWeight: "600", color: colors.foreground }}>
+                  Continue with Google
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
 
         {/* Sign Up Link */}
         <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 24 }}>
           <Text style={{ color: colors.muted, fontSize: 14 }}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => router.push("/(auth)/sign-up")}>
+          <TouchableOpacity onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.push("/(auth)/sign-up");
+          }}>
             <Text style={{ color: colors.primary, fontSize: 14, fontWeight: "bold" }}>Sign Up</Text>
           </TouchableOpacity>
         </View>

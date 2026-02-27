@@ -25,6 +25,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
+  signInWithGoogle: (code: string, redirectUri: string, codeVerifier?: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshAuth: () => Promise<boolean>;
 }
@@ -61,6 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInMutation = trpc.falconAuth.signin.useMutation();
   const signUpMutation = trpc.falconAuth.signup.useMutation();
+  const googleAuthMutation = trpc.falconAuth.googleAuth.useMutation();
   const refreshMutation = trpc.falconAuth.refresh.useMutation();
 
   const loadStoredAuth = useCallback(async () => {
@@ -105,6 +107,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await storeAuthData(result.user, result.tokens);
   }, [signUpMutation, storeAuthData]);
 
+  const signInWithGoogle = useCallback(async (code: string, redirectUri: string, codeVerifier?: string) => {
+    const result = await googleAuthMutation.mutateAsync({ code, redirectUri, codeVerifier });
+    await storeAuthData(result.user, result.tokens);
+  }, [googleAuthMutation, storeAuthData]);
+
   const signOut = useCallback(async () => {
     await Promise.all([
       deleteSecure(AUTH_TOKEN_KEY),
@@ -142,6 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!user && !!accessToken,
         signIn,
         signUp,
+        signInWithGoogle,
         signOut,
         refreshAuth,
       }}

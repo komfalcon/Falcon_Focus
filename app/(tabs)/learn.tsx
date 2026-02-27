@@ -1,7 +1,8 @@
-import { ScrollView, Text, View, Pressable } from 'react-native';
+import { ScrollView, Text, View, Pressable, Alert } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { useState } from 'react';
+import * as Haptics from 'expo-haptics';
 
 export default function LearnScreen() {
   const colors = useColors();
@@ -29,7 +30,10 @@ export default function LearnScreen() {
                 shadowRadius: 6,
                 elevation: activeTab === 'notes' ? 3 : 1,
               }}
-              onPress={() => setActiveTab('notes')}
+              onPress={() => {
+                setActiveTab('notes');
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
             >
               <Text
                 className={`text-sm font-bold text-center ${
@@ -49,7 +53,10 @@ export default function LearnScreen() {
                 shadowRadius: 6,
                 elevation: activeTab === 'flashcards' ? 3 : 1,
               }}
-              onPress={() => setActiveTab('flashcards')}
+              onPress={() => {
+                setActiveTab('flashcards');
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
             >
               <Text
                 className={`text-sm font-bold text-center ${
@@ -74,14 +81,21 @@ export default function LearnScreen() {
                   shadowRadius: 8,
                   elevation: 4,
                 }}
-                onPress={() => {}}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  Alert.alert(
+                    "Create Note",
+                    "Rich text note creation with voice-to-text is coming in the next update!",
+                    [{ text: "Got it", style: "default" }]
+                  );
+                }}
               >
                 <Text className="text-center font-bold text-white text-base">+ New Note</Text>
               </Pressable>
 
               <View className="gap-3">
-                <View
-                  className="rounded-2xl p-4"
+                <Pressable
+                  className="rounded-2xl p-4 active:opacity-90"
                   style={{
                     backgroundColor: colors.surface,
                     shadowColor: '#000',
@@ -89,6 +103,10 @@ export default function LearnScreen() {
                     shadowOpacity: 0.03,
                     shadowRadius: 4,
                     elevation: 1,
+                  }}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    Alert.alert("Open Note", "Full note editor with rich text coming soon!", [{ text: "OK" }]);
                   }}
                 >
                   <View className="flex-row justify-between items-start mb-2">
@@ -109,10 +127,10 @@ export default function LearnScreen() {
                       <Text className="text-xs font-bold" style={{ color: colors.primary }}>Images</Text>
                     </View>
                   </View>
-                </View>
+                </Pressable>
 
-                <View
-                  className="rounded-2xl p-4"
+                <Pressable
+                  className="rounded-2xl p-4 active:opacity-90"
                   style={{
                     backgroundColor: colors.surface,
                     shadowColor: '#000',
@@ -120,6 +138,10 @@ export default function LearnScreen() {
                     shadowOpacity: 0.03,
                     shadowRadius: 4,
                     elevation: 1,
+                  }}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    Alert.alert("Open Note", "Full note editor with rich text coming soon!", [{ text: "OK" }]);
                   }}
                 >
                   <View className="flex-row justify-between items-start mb-2">
@@ -132,7 +154,7 @@ export default function LearnScreen() {
                   <Text className="text-xs text-muted dark:text-muted-dark leading-relaxed">
                     Photosynthesis is the process by which plants convert light energy into chemical energy...
                   </Text>
-                </View>
+                </Pressable>
               </View>
             </View>
           )}
@@ -150,7 +172,14 @@ export default function LearnScreen() {
                   shadowRadius: 8,
                   elevation: 4,
                 }}
-                onPress={() => {}}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  Alert.alert(
+                    "Create Flashcard Deck",
+                    "Spaced repetition flashcard decks are coming in the next update!",
+                    [{ text: "Got it", style: "default" }]
+                  );
+                }}
               >
                 <Text className="text-center font-bold text-white text-base">+ New Deck</Text>
               </Pressable>
@@ -175,10 +204,24 @@ export default function LearnScreen() {
                     <Text className="text-xs" style={{ color: 'rgba(255,255,255,0.65)' }}>24 cards</Text>
                   </View>
                   <View className="flex-row gap-2 mt-3">
-                    <Pressable className="flex-1 rounded-xl p-2.5 active:opacity-80" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                    <Pressable
+                      className="flex-1 rounded-xl p-2.5 active:opacity-80"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        Alert.alert("Study Deck", "Spaced repetition study mode coming soon!", [{ text: "OK" }]);
+                      }}
+                    >
                       <Text className="text-xs font-bold text-white text-center">Study</Text>
                     </Pressable>
-                    <Pressable className="flex-1 rounded-xl p-2.5 active:opacity-80" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}>
+                    <Pressable
+                      className="flex-1 rounded-xl p-2.5 active:opacity-80"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        Alert.alert("Edit Deck", "Deck editing is coming soon!", [{ text: "OK" }]);
+                      }}
+                    >
                       <Text className="text-xs font-bold text-white text-center">Edit</Text>
                     </Pressable>
                   </View>
@@ -206,12 +249,20 @@ export default function LearnScreen() {
                     <Pressable
                       className="flex-1 rounded-xl p-2.5 active:opacity-80"
                       style={{ backgroundColor: colors.primary + '14', borderWidth: 1, borderColor: colors.primary + '40' }}
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        Alert.alert("Study Deck", "Spaced repetition study mode coming soon!", [{ text: "OK" }]);
+                      }}
                     >
                       <Text className="text-xs font-bold text-center" style={{ color: colors.primary }}>Study</Text>
                     </Pressable>
                     <Pressable
                       className="flex-1 rounded-xl p-2.5 active:opacity-80"
                       style={{ backgroundColor: colors.border + '40' }}
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        Alert.alert("Edit Deck", "Deck editing is coming soon!", [{ text: "OK" }]);
+                      }}
                     >
                       <Text className="text-xs font-bold text-muted dark:text-muted-dark text-center">Edit</Text>
                     </Pressable>

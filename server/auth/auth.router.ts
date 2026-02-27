@@ -53,11 +53,13 @@ export const authRouter = router({
     .input(
       z.object({
         code: z.string(),
+        redirectUri: z.string().optional(),
+        codeVerifier: z.string().optional(),
       }),
     )
     .mutation(async ({ input }) => {
       try {
-        const accessToken = await exchangeGoogleCode(input.code);
+        const accessToken = await exchangeGoogleCode(input.code, input.redirectUri, input.codeVerifier);
         const googleUser = await getGoogleUserInfo(accessToken);
         return await googleSignIn(googleUser.id, googleUser.email, googleUser.name, googleUser.picture);
       } catch (error) {
