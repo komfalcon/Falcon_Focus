@@ -4,14 +4,14 @@ const extra = Constants.expoConfig?.extra ?? {};
 
 export const ENV = {
   // API
-  API_URL: (extra.apiUrl as string) ?? 'http://localhost:3000',
+  API_URL: (extra.apiUrl as string | undefined) ?? 'http://localhost:3000',
 
   // Google OAuth
-  GOOGLE_CLIENT_ID: (extra.googleClientId as string) ?? '',
-  GOOGLE_REDIRECT_URI: (extra.googleRedirectUri as string) ?? '',
+  GOOGLE_CLIENT_ID: (extra.googleClientId as string | undefined) ?? '',
+  GOOGLE_REDIRECT_URI: (extra.googleRedirectUri as string | undefined) ?? '',
 
   // App
-  APP_URL: (extra.appUrl as string) ?? 'http://localhost:8081',
+  APP_URL: (extra.appUrl as string | undefined) ?? 'http://localhost:8081',
 
   // Helpers
   IS_DEV: __DEV__,
