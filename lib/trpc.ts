@@ -20,7 +20,7 @@ export const trpc = createTRPCReact<AppRouter>();
  */
 export function createTRPCClient() {
   try {
-    const baseUrl = getApiBaseUrl();
+    const baseUrl = getApiBaseUrl() || 'http://localhost:3000';
     return trpc.createClient({
       links: [
         httpBatchLink({
