@@ -39,7 +39,11 @@ export default function RootLayout() {
 
   // Initialize Manus runtime for cookie injection from parent container
   useEffect(() => {
-    initManusRuntime();
+    try {
+      initManusRuntime();
+    } catch (error) {
+      console.warn('[RootLayout] Failed to initialize Manus runtime:', error);
+    }
   }, []);
 
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => {
@@ -55,19 +59,32 @@ export default function RootLayout() {
 
   // Create clients once and reuse them
   const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            // Disable automatic refetching on window focus for mobile
-            refetchOnWindowFocus: false,
-            // Retry failed requests once
-            retry: 1,
+    () => {
+      try {
+        return new QueryClient({
+          defaultOptions: {
+            queries: {
+              // Disable automatic refetching on window focus for mobile
+              refetchOnWindowFocus: false,
+              // Retry failed requests once
+              retry: 1,
+            },
           },
-        },
-      }),
+        });
+      } catch (error) {
+        console.error('[RootLayout] Failed to create QueryClient, using defaults:', error);
+        return new QueryClient();
+      }
+    },
   );
-  const [trpcClient] = useState(() => createTRPCClient());
+  const [trpcClient] = useState(() => {
+    try {
+      return createTRPCClient();
+    } catch (error) {
+      console.error('[RootLayout] Failed to create TRPC client:', error);
+      return createTRPCClient();
+    }
+  });
 
   // Ensure minimum 8px padding for top and bottom on mobile
   const providerInitialMetrics = useMemo(() => {

@@ -19,24 +19,42 @@ export const trpc = createTRPCReact<AppRouter>();
  * Call this once in your app's root layout.
  */
 export function createTRPCClient() {
-  return trpc.createClient({
-    links: [
-      httpBatchLink({
-        url: `${getApiBaseUrl()}/api/trpc`,
-        // tRPC v11: transformer MUST be inside httpBatchLink, not at root
-        transformer: superjson,
-        async headers() {
-          const token = await Auth.getSessionToken();
-          return token ? { Authorization: `Bearer ${token}` } : {};
-        },
-        // Custom fetch to include credentials for cookie-based auth
-        fetch(url, options) {
-          return fetch(url, {
-            ...options,
-            credentials: "include",
-          });
-        },
-      }),
-    ],
-  });
+  try {
+    const baseUrl = getApiBaseUrl();
+    return trpc.createClient({
+      links: [
+        httpBatchLink({
+          url: `${baseUrl}/api/trpc`,
+          // tRPC v11: transformer MUST be inside httpBatchLink, not at root
+          transformer: superjson,
+          async headers() {
+            try {
+              const token = await Auth.getSessionToken();
+              return token ? { Authorization: `Bearer ${token}` } : {};
+            } catch (error) {
+              console.warn('[TRPC] Failed to get session token for headers:', error);
+              return {};
+            }
+          },
+          // Custom fetch to include credentials for cookie-based auth
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: "include",
+            });
+          },
+        }),
+      ],
+    });
+  } catch (error) {
+    console.error('[TRPC] Failed to create TRPC client, using fallback:', error);
+    return trpc.createClient({
+      links: [
+        httpBatchLink({
+          url: 'http://localhost:3000/api/trpc',
+          transformer: superjson,
+        }),
+      ],
+    });
+  }
 }

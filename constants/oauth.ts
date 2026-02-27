@@ -34,26 +34,31 @@ export const API_BASE_URL = env.apiBaseUrl;
  * to the API_URL environment variable configured via app.config.ts.
  */
 export function getApiBaseUrl(): string {
-  // If API_BASE_URL is set, use it
-  if (API_BASE_URL) {
-    return API_BASE_URL.replace(/\/$/, "");
-  }
-
-  // On web, derive from current hostname by replacing port 8081 with 3000
-  if (ReactNative.Platform.OS === "web" && typeof window !== "undefined" && window.location) {
-    const { protocol, hostname } = window.location;
-    // Pattern: 8081-sandboxid.region.domain -> 3000-sandboxid.region.domain
-    const apiHostname = hostname.replace(/^8081-/, "3000-");
-    if (apiHostname !== hostname) {
-      return `${protocol}//${apiHostname}`;
+  try {
+    // If API_BASE_URL is set, use it
+    if (API_BASE_URL) {
+      return API_BASE_URL.replace(/\/$/, "");
     }
-  }
 
-  // Fallback: dev uses localhost, production uses ENV.API_URL
-  if (typeof __DEV__ !== "undefined" && __DEV__) {
+    // On web, derive from current hostname by replacing port 8081 with 3000
+    if (ReactNative.Platform.OS === "web" && typeof window !== "undefined" && window.location) {
+      const { protocol, hostname } = window.location;
+      // Pattern: 8081-sandboxid.region.domain -> 3000-sandboxid.region.domain
+      const apiHostname = hostname.replace(/^8081-/, "3000-");
+      if (apiHostname !== hostname) {
+        return `${protocol}//${apiHostname}`;
+      }
+    }
+
+    // Fallback: dev uses localhost, production uses ENV.API_URL
+    if (typeof __DEV__ !== "undefined" && __DEV__) {
+      return "http://localhost:3000";
+    }
+    return ENV.API_URL;
+  } catch (error) {
+    console.warn('[OAuth] Failed to determine API base URL, using fallback:', error);
     return "http://localhost:3000";
   }
-  return ENV.API_URL;
 }
 
 export const SESSION_TOKEN_KEY = "app_session_token";
