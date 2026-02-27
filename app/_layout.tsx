@@ -77,14 +77,7 @@ export default function RootLayout() {
       }
     },
   );
-  const [trpcClient] = useState(() => {
-    try {
-      return createTRPCClient();
-    } catch (error) {
-      console.error('[RootLayout] Failed to create TRPC client:', error);
-      return createTRPCClient();
-    }
-  });
+  const [trpcClient] = useState(() => createTRPCClient());
 
   // Ensure minimum 8px padding for top and bottom on mobile
   const providerInitialMetrics = useMemo(() => {
