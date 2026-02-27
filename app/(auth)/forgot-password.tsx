@@ -12,6 +12,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { trpc } from "@/lib/trpc";
+import * as Haptics from "expo-haptics";
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function ForgotPasswordScreen() {
       return;
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setError("");
     setIsLoading(true);
     try {
@@ -62,7 +64,24 @@ export default function ForgotPasswordScreen() {
 
         {/* Logo & Header */}
         <View style={{ alignItems: "center", marginBottom: 40 }}>
-          <Text style={{ fontSize: 48, marginBottom: 12 }}>🦅</Text>
+          <View
+            style={{
+              width: 88,
+              height: 88,
+              borderRadius: 24,
+              backgroundColor: colors.secondary,
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 16,
+              shadowColor: colors.primary,
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.3,
+              shadowRadius: 16,
+              elevation: 8,
+            }}
+          >
+            <Text style={{ fontSize: 44 }}>🦅</Text>
+          </View>
           <Text style={{ fontSize: 28, fontWeight: "bold", color: colors.foreground }}>
             Falcon Focus
           </Text>
@@ -88,7 +107,10 @@ export default function ForgotPasswordScreen() {
               <Text style={{ fontWeight: "bold", color: colors.foreground }}>{email}</Text>
             </Text>
             <TouchableOpacity
-              onPress={() => router.push("/(auth)/sign-in")}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push("/(auth)/sign-in");
+              }}
               style={{
                 backgroundColor: colors.primary,
                 borderRadius: 14,

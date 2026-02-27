@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, Pressable } from 'react-native';
+import { ScrollView, Text, View, Pressable, Alert } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { useStudy } from '@/lib/study-context';
@@ -168,6 +168,14 @@ export default function PlannerScreen() {
               <Pressable
                 className="rounded-xl px-4 py-2 active:opacity-80"
                 style={{ backgroundColor: colors.primary }}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  Alert.alert(
+                    "Add Study Block",
+                    "Study block scheduling is coming soon! You'll be able to add timed study sessions with reminders.",
+                    [{ text: "Got it", style: "default" }]
+                  );
+                }}
               >
                 <Text className="text-xs font-bold text-white">+ Add</Text>
               </Pressable>
@@ -236,6 +244,14 @@ export default function PlannerScreen() {
               shadowOpacity: 0.18,
               shadowRadius: 10,
               elevation: 4,
+            }}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              Alert.alert(
+                "Export as Flight Card",
+                "Create a beautiful shareable card of your study schedule. This feature is coming soon!",
+                [{ text: "Can't wait!", style: "default" }]
+              );
             }}
           >
             <View className="flex-row items-center gap-3">

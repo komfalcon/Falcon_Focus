@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { GamificationEngine } from '@/lib/gamification-engine';
 import { BurnoutGuardian } from '@/lib/burnout-guardian';
+import { SkeletonCard, SkeletonStatCard } from '@/components/skeleton';
 
 const FALCON_TIPS = [
   'Your Chemistry kinetics is weak before exam — try this 25-min targeted dive',
@@ -377,50 +378,58 @@ export default function HomeScreen() {
           {/* Today's Schedule */}
           <View className="mb-6">
             <Text className="text-base font-bold text-foreground dark:text-foreground-dark mb-3">Today's Schedule</Text>
-            <View className="gap-3">
-              <View
-                className="rounded-2xl p-4"
-                style={{
-                  backgroundColor: colors.surface,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.03,
-                  shadowRadius: 4,
-                  elevation: 1,
-                }}
-              >
-                <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Mathematics Lecture</Text>
-                <Text className="text-xs text-muted dark:text-muted-dark mt-1">10:00 AM - 11:30 AM</Text>
+            {refreshing ? (
+              <View className="gap-3">
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
               </View>
-              <View
-                className="rounded-2xl p-4"
-                style={{
-                  backgroundColor: colors.surface,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.03,
-                  shadowRadius: 4,
-                  elevation: 1,
-                }}
-              >
-                <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Chemistry Study</Text>
-                <Text className="text-xs text-muted dark:text-muted-dark mt-1">2:00 PM - 3:30 PM</Text>
+            ) : (
+              <View className="gap-3">
+                <View
+                  className="rounded-2xl p-4"
+                  style={{
+                    backgroundColor: colors.surface,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.03,
+                    shadowRadius: 4,
+                    elevation: 1,
+                  }}
+                >
+                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Mathematics Lecture</Text>
+                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">10:00 AM - 11:30 AM</Text>
+                </View>
+                <View
+                  className="rounded-2xl p-4"
+                  style={{
+                    backgroundColor: colors.surface,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.03,
+                    shadowRadius: 4,
+                    elevation: 1,
+                  }}
+                >
+                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Chemistry Study</Text>
+                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">2:00 PM - 3:30 PM</Text>
+                </View>
+                <View
+                  className="rounded-2xl p-4"
+                  style={{
+                    backgroundColor: colors.surface,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.03,
+                    shadowRadius: 4,
+                    elevation: 1,
+                  }}
+                >
+                  <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Review Session</Text>
+                  <Text className="text-xs text-muted dark:text-muted-dark mt-1">5:00 PM - 6:00 PM</Text>
+                </View>
               </View>
-              <View
-                className="rounded-2xl p-4"
-                style={{
-                  backgroundColor: colors.surface,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.03,
-                  shadowRadius: 4,
-                  elevation: 1,
-                }}
-              >
-                <Text className="text-sm font-semibold text-foreground dark:text-foreground-dark">Review Session</Text>
-                <Text className="text-xs text-muted dark:text-muted-dark mt-1">5:00 PM - 6:00 PM</Text>
-              </View>
-            </View>
+            )}
           </View>
 
           {/* Motivational Quote */}

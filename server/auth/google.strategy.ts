@@ -10,22 +10,32 @@ export interface GoogleUserInfo {
   picture?: string;
 }
 
-export async function exchangeGoogleCode(code: string): Promise<string> {
+export async function exchangeGoogleCode(
+  code: string,
+  redirectUri?: string,
+  codeVerifier?: string,
+): Promise<string> {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI;
+  const effectiveRedirectUri = redirectUri || process.env.GOOGLE_REDIRECT_URI;
 
-  if (!clientId || !clientSecret || !redirectUri) {
+  if (!clientId || !clientSecret || !effectiveRedirectUri) {
     throw new Error("Google OAuth not configured");
   }
 
-  const { data } = await axios.post(GOOGLE_TOKEN_URL, {
+  const body: Record<string, string> = {
     code,
     client_id: clientId,
     client_secret: clientSecret,
-    redirect_uri: redirectUri,
+    redirect_uri: effectiveRedirectUri,
     grant_type: "authorization_code",
-  });
+  };
+
+  if (codeVerifier) {
+    body.code_verifier = codeVerifier;
+  }
+
+  const { data } = await axios.post(GOOGLE_TOKEN_URL, body);
 
   return data.access_token;
 }
