@@ -30,7 +30,7 @@ export default function ProgressScreen() {
     const subjectHours: Record<string, number> = {};
     for (const session of studySessions) {
       if (session.subject) {
-        const hours = session.duration / 60;
+        const hours = session.duration / 60; // duration is in minutes, convert to hours
         subjectHours[session.subject] = (subjectHours[session.subject] || 0) + hours;
       }
     }

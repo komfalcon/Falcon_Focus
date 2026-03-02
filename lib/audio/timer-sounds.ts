@@ -13,6 +13,7 @@ class TimerAudioService {
   private isLoaded = false;
   private isMuted = false;
   private volume = 0.5;
+  private isTickPlaying = false;
 
   async initialize(): Promise<void> {
     try {
@@ -115,10 +116,11 @@ class TimerAudioService {
     this.stopTicking();
 
     this.tickInterval = setInterval(async () => {
-      if (this.isMuted) {
-        this.stopTicking();
+      if (this.isMuted || this.isTickPlaying) {
+        if (this.isMuted) this.stopTicking();
         return;
       }
+      this.isTickPlaying = true;
       try {
         if (this.tickSound) {
           await this.tickSound.replayAsync();
@@ -128,6 +130,8 @@ class TimerAudioService {
       } catch {
         // Ignore audio errors — try vibration fallback
         fallbackTick();
+      } finally {
+        this.isTickPlaying = false;
       }
     }, 1000);
   }
