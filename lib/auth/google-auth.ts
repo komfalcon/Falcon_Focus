@@ -1,6 +1,6 @@
 import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
-import { Platform } from "react-native";
+import { Alert } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -13,24 +13,37 @@ const discovery = {
 };
 
 export function useGoogleAuth() {
-  const redirectUri = AuthSession.makeRedirectUri({
-    scheme: Platform.OS !== "web" ? "falconfocus" : undefined,
-    path: "oauth/google",
-  });
+  try {
+    const redirectUri = AuthSession.makeRedirectUri({
+      scheme: 'falcon-focus',
+      path: 'auth/callback',
+    });
 
-  const [request, response, promptAsync] = AuthSession.useAuthRequest(
-    {
-      clientId: GOOGLE_CLIENT_ID,
-      scopes: ["openid", "profile", "email"],
+    const [request, response, promptAsync] = AuthSession.useAuthRequest(
+      {
+        clientId: GOOGLE_CLIENT_ID,
+        scopes: ["openid", "profile", "email"],
+        redirectUri,
+      },
+      discovery,
+    );
+
+    return {
+      request,
+      response,
+      promptAsync,
       redirectUri,
-    },
-    discovery,
-  );
-
-  return {
-    request,
-    response,
-    promptAsync,
-    redirectUri,
-  };
+    };
+  } catch (error) {
+    console.error('[GoogleAuth] Failed to initialize:', error);
+    return {
+      request: null,
+      response: null,
+      promptAsync: async () => {
+        Alert.alert('Google Sign In unavailable', 'Please use email sign in instead.');
+        return { type: 'dismiss' as const };
+      },
+      redirectUri: '',
+    };
+  }
 }

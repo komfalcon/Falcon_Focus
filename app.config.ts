@@ -6,6 +6,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: "Falcon Focus",
   slug: "falcon-focus",
   owner: "falconkom",
+  scheme: "falcon-focus",
   version: "1.0.0",
   orientation: "portrait",
 

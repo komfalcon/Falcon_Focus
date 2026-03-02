@@ -63,3 +63,32 @@ The following variables are validated on the client in production builds:
 
 - `API_URL`
 - `GOOGLE_CLIENT_ID`
+
+---
+
+## Google OAuth Redirect URI Setup
+
+The app uses the custom URL scheme `falcon-focus` for Google OAuth deep links.
+The redirect URI used in code is:
+
+```
+falcon-focus://auth/callback
+```
+
+### EAS Environment Variables
+
+1. Go to **https://expo.dev/accounts/falconkom/projects/falcon-focus/settings/environment-variables**
+2. Find (or create) the variable **`GOOGLE_REDIRECT_URI`**
+3. Set its value to: **`falcon-focus://auth/callback`**
+4. Apply it to both **preview** and **production** environments
+5. Save
+
+### Google Cloud Console — OAuth Redirect URI
+
+1. Go to **https://console.cloud.google.com/apis/credentials**
+2. Select the project used for Falcon Focus
+3. Under **OAuth 2.0 Client IDs**, click on the client used for mobile/native (e.g. "Android" or "iOS" client)
+4. In the **Authorized redirect URIs** section, click **Add URI**
+5. Enter: **`falcon-focus://auth/callback`**
+6. Click **Save**
+7. Repeat for each OAuth client that the app uses (Android, iOS, Web if applicable)
