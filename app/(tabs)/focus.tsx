@@ -14,6 +14,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import type { StudySession } from '@/lib/types';
+import { timerAudio } from '@/lib/audio/timer-sounds';
 
 type TimerMode = 'work' | 'break' | 'idle';
 type AmbientSound = 'forest' | 'rain' | 'cafe' | 'binaural' | 'silent';
@@ -78,8 +79,17 @@ export default function FocusScreen() {
   const [elapsed, setElapsed] = useState(0);
   const [xpEarned, setXpEarned] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   const timerInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Initialize and cleanup audio
+  useEffect(() => {
+    timerAudio.initialize();
+    return () => {
+      timerAudio.cleanup();
+    };
+  }, []);
 
   // Falcon soaring animation
   const falconY = useSharedValue(120);
@@ -116,6 +126,8 @@ export default function FocusScreen() {
           if (timerMode === 'work') {
             setTimerMode('break');
             setTotalDuration(breakMinutes * 60);
+            timerAudio.stopTicking();
+            timerAudio.playBreakStart();
             return breakMinutes * 60;
           } else {
             handleEndSession();
@@ -145,11 +157,21 @@ export default function FocusScreen() {
     setSessionStartTime(Date.now());
     setDistractionCount(0);
     setIsPaused(false);
+    timerAudio.startTicking();
   };
 
   const togglePause = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setIsPaused((p) => !p);
+    setIsPaused((p) => {
+      if (p) {
+        // Resuming
+        timerAudio.startTicking();
+      } else {
+        // Pausing
+        timerAudio.stopTicking();
+      }
+      return !p;
+    });
   };
 
   const skipBreak = () => {
@@ -171,6 +193,7 @@ export default function FocusScreen() {
 
     setTimerMode('idle');
     setIsPaused(false);
+    timerAudio.playSessionComplete();
     summarySlide.value = withSpring(0, { damping: 20, stiffness: 120 });
     setShowSummary(true);
   }, [sessionStartTime, summarySlide]);
@@ -392,6 +415,32 @@ export default function FocusScreen() {
               </Pressable>
             ))}
           </ScrollView>
+
+          {/* Mute Toggle */}
+          <Pressable
+            className="rounded-full px-5 py-2 mb-4 active:opacity-80"
+            style={{
+              backgroundColor: isMuted ? 'rgba(255,255,255,0.20)' : 'rgba(255,255,255,0.10)',
+            }}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              const newMuted = !isMuted;
+              setIsMuted(newMuted);
+              timerAudio.setMuted(newMuted);
+              if (newMuted) {
+                timerAudio.stopTicking();
+              } else if (timerMode === 'work' && !isPaused) {
+                timerAudio.startTicking();
+              }
+            }}
+          >
+            <Text
+              className="text-sm font-semibold"
+              style={{ color: isMuted ? '#FFFFFF' : 'rgba(255,255,255,0.7)' }}
+            >
+              {isMuted ? '🔇 Sound Off' : '🔊 Sound On'}
+            </Text>
+          </Pressable>
 
           {/* End Session */}
           {timerMode !== 'idle' && (

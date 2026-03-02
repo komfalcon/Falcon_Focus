@@ -40,15 +40,7 @@ const YOUR_NAME = 'You';
 
 const RANK_COLORS = ['#FFB81C', '#C0C0C0', '#CD7F32'] as const;
 
-function buildDemoMembers(): FlockMember[] {
-  const now = Date.now();
-  return [
-    { id: 'm_2', name: 'Amina', joinCode: '', joinedAt: now - 86400000 * 3, altitude: 'Soaring', streak: 12, xp: 3200, lastUpdate: now - 3600000 },
-    { id: 'm_3', name: 'Carlos', joinCode: '', joinedAt: now - 86400000 * 5, altitude: 'Apex', streak: 24, xp: 7800, lastUpdate: now - 7200000 },
-    { id: 'm_4', name: 'Fatima', joinCode: '', joinedAt: now - 86400000 * 2, altitude: 'Fledgling', streak: 3, xp: 450, lastUpdate: now - 1800000 },
-    { id: 'm_5', name: 'Jin', joinCode: '', joinedAt: now - 86400000 * 7, altitude: 'Soaring', streak: 18, xp: 4100, lastUpdate: now - 5400000 },
-  ];
-}
+
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -113,25 +105,7 @@ function generateActivities(members: FlockMember[]): ActivityItem[] {
     });
 }
 
-function generateDemoChat(members: FlockMember[]): ChatMessage[] {
-  const lines = [
-    { sender: 'Carlos', text: 'Just finished a 2-hour session 💪' },
-    { sender: YOUR_NAME, text: 'Nice! Starting mine now' },
-    { sender: 'Amina', text: 'Keep it up everyone! Almost exam week' },
-    { sender: 'Jin', text: 'Who wants to do a group sprint later?' },
-    { sender: YOUR_NAME, text: "I'm in! Let's go at 4pm" },
-    { sender: 'Fatima', text: 'Count me in too 🙋‍♀️' },
-  ];
-  const now = Date.now();
-  return lines
-    .filter((l) => l.sender === YOUR_NAME || members.some((m) => m.name === l.sender))
-    .map((l, i) => ({
-      id: `msg_${i}`,
-      sender: l.sender,
-      text: l.text,
-      timestamp: now - (lines.length - i) * 180000,
-    }));
-}
+
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
@@ -351,19 +325,13 @@ export default function FlockScreen() {
     }
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const created = FlockModeService.createFlock(YOUR_NAME, name, newFlockDesc.trim() || undefined);
-    // Inject demo members for a richer experience
-    const withDemo: Flock = { ...created, members: [...created.members, ...buildDemoMembers()] };
-    setFlock(withDemo);
-    await saveFlock(withDemo);
-    // Seed demo chat
-    const demoChat = generateDemoChat(withDemo.members);
-    setMessages(demoChat);
-    await saveChat(withDemo.id, demoChat);
+    setFlock(created);
+    await saveFlock(created);
 
     setNewFlockName('');
     setNewFlockDesc('');
     setCreateModalVisible(false);
-  }, [newFlockName, newFlockDesc, saveFlock, saveChat]);
+  }, [newFlockName, newFlockDesc, saveFlock]);
 
   const handleJoin = useCallback(async () => {
     const code = joinCodeInput.trim().toUpperCase();
@@ -374,20 +342,16 @@ export default function FlockScreen() {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     // Simulate joining: create a flock as if found
     const joined = FlockModeService.createFlock(YOUR_NAME, 'Study Squad');
-    const withDemo: Flock = {
+    const withCode: Flock = {
       ...joined,
       inviteCode: code,
-      members: [...joined.members, ...buildDemoMembers()],
     };
-    setFlock(withDemo);
-    await saveFlock(withDemo);
-    const demoChat = generateDemoChat(withDemo.members);
-    setMessages(demoChat);
-    await saveChat(withDemo.id, demoChat);
+    setFlock(withCode);
+    await saveFlock(withCode);
 
     setJoinCodeInput('');
     setJoinModalVisible(false);
-  }, [joinCodeInput, saveFlock, saveChat]);
+  }, [joinCodeInput, saveFlock]);
 
   const handleCopyCode = useCallback(async () => {
     if (!flock) return;
@@ -648,6 +612,18 @@ export default function FlockScreen() {
             Leaderboard
           </Text>
 
+          {sortedMembers.length <= 1 ? (
+            <View
+              className="rounded-xl p-4 items-center"
+              style={{ backgroundColor: colors.surface }}
+            >
+              <Text style={{ fontSize: 24, marginBottom: 8 }}>👥</Text>
+              <Text className="text-sm text-center" style={{ color: colors.muted }}>
+                Invite members to see leaderboard
+              </Text>
+            </View>
+          ) : (
+          <>
           {/* Top 3 Podium */}
           {sortedMembers.length >= 3 && (
             <View className="flex-row items-end justify-center mb-4" style={{ height: 160 }}>
@@ -715,6 +691,8 @@ export default function FlockScreen() {
               );
             })}
           </View>
+          </>
+          )}
         </View>
 
         {/* ── Activity Feed ────────────────────────────────────────────── */}
@@ -722,6 +700,17 @@ export default function FlockScreen() {
           <Text className="text-lg font-bold text-foreground dark:text-foreground-dark mb-3">
             Recent Activity
           </Text>
+          {activities.length === 0 ? (
+            <View
+              className="rounded-xl p-4 items-center"
+              style={{ backgroundColor: colors.surface }}
+            >
+              <Text style={{ fontSize: 24, marginBottom: 8 }}>📭</Text>
+              <Text className="text-sm text-center" style={{ color: colors.muted }}>
+                No recent activity yet. Start studying!
+              </Text>
+            </View>
+          ) : (
           <View className="gap-2">
             {activities.map((act) => (
               <View
@@ -739,6 +728,7 @@ export default function FlockScreen() {
               </View>
             ))}
           </View>
+          )}
         </View>
 
         {/* ── Flock Chat ──────────────────────────────────────────────── */}
@@ -754,8 +744,16 @@ export default function FlockScreen() {
               ref={chatListRef}
               data={messages}
               keyExtractor={(item) => item.id}
-              contentContainerStyle={{ padding: 12 }}
+              contentContainerStyle={{ padding: 12, flexGrow: 1 }}
               onContentSizeChange={() => chatListRef.current?.scrollToEnd({ animated: false })}
+              ListEmptyComponent={
+                <View className="items-center justify-center py-8">
+                  <Text style={{ fontSize: 24, marginBottom: 8 }}>👋</Text>
+                  <Text className="text-sm text-center" style={{ color: colors.muted }}>
+                    No messages yet. Say hello!
+                  </Text>
+                </View>
+              }
               renderItem={({ item }) => {
                 const isMe = item.sender === YOUR_NAME;
                 return (

@@ -22,6 +22,8 @@ const KEYS = {
   REDUCE_ANIMATIONS: '@settings/reduce_animations',
   DEFAULT_TIMER: '@settings/default_timer',
   ENERGY_FREQUENCY: '@settings/energy_frequency',
+  TIMER_SOUND_ENABLED: '@settings/timer_sound_enabled',
+  TIMER_SOUND_VOLUME: '@settings/timer_sound_volume',
 } as const;
 
 type ThemeOption = 'light' | 'dark' | 'system';
@@ -262,13 +264,16 @@ export default function SettingsScreen() {
   // ── Study preferences ──
   const [defaultTimer, setDefaultTimer] = useState<TimerMode>('pomodoro');
   const [energyFreq, setEnergyFreq] = useState<EnergyFrequency>('after_session');
+  const [timerSoundEnabled, setTimerSoundEnabled] = useState(true);
   useEffect(() => {
     Promise.all([
       AsyncStorage.getItem(KEYS.DEFAULT_TIMER),
       AsyncStorage.getItem(KEYS.ENERGY_FREQUENCY),
-    ]).then(([t, e]) => {
+      AsyncStorage.getItem(KEYS.TIMER_SOUND_ENABLED),
+    ]).then(([t, e, s]) => {
       if (t === 'pomodoro' || t === 'falcon_dive') setDefaultTimer(t);
       if (e === 'after_session' || e === 'daily' || e === 'manual') setEnergyFreq(e);
+      if (s === 'false') setTimerSoundEnabled(false);
     });
   }, []);
 
@@ -503,6 +508,18 @@ export default function SettingsScreen() {
                   foreground={colors.foreground}
                 />
               </Card>
+
+              <ToggleRow
+                label="Timer Sounds"
+                value={timerSoundEnabled}
+                onValueChange={async (v) => {
+                  setTimerSoundEnabled(v);
+                  await AsyncStorage.setItem(KEYS.TIMER_SOUND_ENABLED, String(v));
+                }}
+                surface={colors.surface}
+                trackColors={trackColors}
+                thumbColors={thumbColors}
+              />
             </View>
           </View>
 

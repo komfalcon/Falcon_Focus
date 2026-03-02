@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { Platform } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { trpc } from "@/lib/trpc";
+import { initializeNewUser } from "@/lib/data-init";
 
 const AUTH_TOKEN_KEY = "falcon_access_token";
 const AUTH_REFRESH_TOKEN_KEY = "falcon_refresh_token";
@@ -98,6 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ]);
     setAccessToken(tokens.accessToken);
     setUser(userData);
+    await initializeNewUser(userData.id);
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
