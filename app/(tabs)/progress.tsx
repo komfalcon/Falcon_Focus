@@ -358,8 +358,7 @@ export default function ProgressScreen() {
                     />
                   </View>
                 </View>
-              ))}
-              )}
+              )))}
             </View>
           </View>
 

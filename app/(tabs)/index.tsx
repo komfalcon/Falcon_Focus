@@ -19,10 +19,10 @@ import { SkeletonCard, SkeletonStatCard } from '@/components/skeleton';
 import { EmptyState } from '@/components/empty-state';
 
 const FALCON_TIPS = [
-  'Your Chemistry kinetics is weak before exam — try this 25-min targeted dive.',
-  "You're crushing it! 7-day streak incoming. Keep the momentum.",
+  'Welcome! Start your first session to get personalized tips 🦅',
+  "You're crushing it! Keep the momentum going.",
   'Energy is high today — perfect for deep focus sessions.',
-  'Take a break! Your energy is declining. A 10-min walk helps.',
+  'Take a break! A 10-min walk helps recharge.',
   "Review yesterday's notes before starting today's session.",
 ];
 
@@ -108,12 +108,17 @@ export default function HomeScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      setCurrentTipIndex(Math.floor(Math.random() * FALCON_TIPS.length));
+      // Show onboarding tip for new users (no sessions yet)
+      if (userProgress.totalSessions === 0) {
+        setCurrentTipIndex(0);
+      } else {
+        setCurrentTipIndex(1 + Math.floor(Math.random() * (FALCON_TIPS.length - 1)));
+      }
       setBurnoutIndicators(BurnoutGuardian.analyzeBurnoutRisk(formattedLogs));
       setEnergyForecast(
         BurnoutGuardian.generateEnergyForecast(formattedLogs, tasks.length),
       );
-    }, [formattedLogs, tasks.length]),
+    }, [formattedLogs, tasks.length, userProgress.totalSessions]),
   );
 
   useEffect(() => {
@@ -604,6 +609,26 @@ export default function HomeScreen() {
         </View>
 
         {/* ─── 7. Energy Forecast Row ─── */}
+        {energyLogs.length === 0 ? (
+        <View className="mx-4 mb-6">
+          <View
+            className="rounded-2xl p-4 items-center"
+            style={{
+              backgroundColor: colors.surface,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+          >
+            <Text style={{ fontSize: 28, marginBottom: 8 }}>🔋</Text>
+            <Text className="text-sm font-semibold" style={{ color: colors.foreground }}>
+              Log your energy to see forecast
+            </Text>
+            <Text className="text-xs mt-1" style={{ color: colors.muted }}>
+              Track your energy levels for personalized predictions
+            </Text>
+          </View>
+        </View>
+        ) : (
         <View className="flex-row gap-3 mx-4 mb-6">
           {/* Today */}
           <View
@@ -655,6 +680,7 @@ export default function HomeScreen() {
             </Text>
           </View>
         </View>
+        )}
       </ScrollView>
     </ScreenContainer>
   );
