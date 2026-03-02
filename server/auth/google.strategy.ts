@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ENV } from "../_core/env";
 
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
@@ -15,9 +16,9 @@ export async function exchangeGoogleCode(
   redirectUri?: string,
   codeVerifier?: string,
 ): Promise<string> {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const effectiveRedirectUri = redirectUri || process.env.GOOGLE_REDIRECT_URI;
+  const clientId = ENV.googleClientId;
+  const clientSecret = ENV.googleClientSecret;
+  const effectiveRedirectUri = redirectUri || ENV.googleRedirectUri;
 
   if (!clientId || !clientSecret || !effectiveRedirectUri) {
     throw new Error("Google OAuth not configured");
