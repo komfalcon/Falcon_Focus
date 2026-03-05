@@ -1,5 +1,16 @@
 import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 export interface PushNotificationPreferences {
   enabled: boolean;
@@ -22,44 +33,63 @@ export const DEFAULT_PREFERENCES: PushNotificationPreferences = {
 };
 
 export class PushNotificationsService {
-  private static readonly STORAGE_KEY = 'push_notifications_prefs';
-  private static readonly TOKEN_STORAGE_KEY = 'expo_push_token';
+  private static TOKEN_KEY = 'push_token';
+  private static SETTINGS_KEY = 'notification_settings';
 
   /**
-   * Request notification permissions from user
+   * Request notification permissions and set up Android channels
    */
   static async requestPermissions(): Promise<boolean> {
-    try {
+    if (!Device.isDevice) return false;
+
+    const { status: existing } = await Notifications.getPermissionsAsync();
+    let final = existing;
+
+    if (existing !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
-      return status === 'granted';
-    } catch (error) {
-      console.error('Failed to request notification permissions:', error);
-      return false;
+      final = status;
     }
+
+    if (final !== 'granted') return false;
+
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'Falcon Focus',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#0a7ea4',
+        sound: 'default',
+      });
+      await Notifications.setNotificationChannelAsync('timer', {
+        name: 'Timer Alerts',
+        importance: Notifications.AndroidImportance.HIGH,
+        vibrationPattern: [0, 500, 200, 500],
+        lightColor: '#FFB81C',
+      });
+    }
+
+    return true;
   }
 
   /**
-   * Get Expo Push Token and store locally
+   * Get Expo Push Token with caching
    */
-  static async getAndStorePushToken(): Promise<string | null> {
+  static async getExpoPushToken(): Promise<string | null> {
     try {
-      const token = (await Notifications.getExpoPushTokenAsync()).data;
-      await AsyncStorage.setItem(this.TOKEN_STORAGE_KEY, token);
-      return token;
-    } catch (error) {
-      console.error('Failed to get push token:', error);
-      return null;
-    }
-  }
+      const cached = await AsyncStorage.getItem(this.TOKEN_KEY);
+      if (cached) return cached;
 
-  /**
-   * Get stored push token
-   */
-  static async getStoredPushToken(): Promise<string | null> {
-    try {
-      return await AsyncStorage.getItem(this.TOKEN_STORAGE_KEY);
+      const granted = await this.requestPermissions();
+      if (!granted) return null;
+
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+      if (!projectId) return null;
+
+      const token = await Notifications.getExpoPushTokenAsync({ projectId });
+      await AsyncStorage.setItem(this.TOKEN_KEY, token.data);
+      return token.data;
     } catch (error) {
-      console.error('Failed to retrieve push token:', error);
+      console.error('[Notifications] Token error:', error);
       return null;
     }
   }
@@ -69,10 +99,10 @@ export class PushNotificationsService {
    */
   static async loadPreferences(): Promise<PushNotificationPreferences> {
     try {
-      const stored = await AsyncStorage.getItem(this.STORAGE_KEY);
+      const stored = await AsyncStorage.getItem(this.SETTINGS_KEY);
       return stored ? JSON.parse(stored) : DEFAULT_PREFERENCES;
     } catch (error) {
-      console.error('Failed to load notification preferences:', error);
+      console.error('[Notifications] Failed to load preferences:', error);
       return DEFAULT_PREFERENCES;
     }
   }
@@ -82,10 +112,47 @@ export class PushNotificationsService {
    */
   static async savePreferences(prefs: PushNotificationPreferences): Promise<void> {
     try {
-      await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(prefs));
+      await AsyncStorage.setItem(this.SETTINGS_KEY, JSON.stringify(prefs));
     } catch (error) {
-      console.error('Failed to save notification preferences:', error);
+      console.error('[Notifications] Failed to save preferences:', error);
     }
+  }
+
+  /**
+   * Schedule daily motivation notification
+   */
+  static async scheduleDailyMotivation(): Promise<void> {
+    const messages = [
+      "Good morning! 🌅 Ready to soar today?",
+      "Every session counts! 🦅 Start small, finish strong.",
+      "Your future self will thank you for studying today 🎯",
+      "Top students study consistently. Today's your day! ⚡",
+    ];
+
+    const body = messages[Math.floor(Math.random() * messages.length)];
+
+    await Notifications.scheduleNotificationAsync({
+      identifier: 'daily_motivation',
+      content: { title: '🦅 Falcon Focus', body, sound: 'default' },
+      trigger: { hour: 8, minute: 0, repeats: true, channelId: 'default' },
+    }).catch(console.error);
+  }
+
+  /**
+   * Schedule streak reminder notification
+   */
+  static async scheduleStreakReminder(currentStreak: number): Promise<void> {
+    if (currentStreak <= 0) return;
+
+    await Notifications.scheduleNotificationAsync({
+      identifier: 'streak_reminder',
+      content: {
+        title: '🔥 Streak Alert!',
+        body: `You're on a ${currentStreak}-day streak! Don't break it — study today!`,
+        sound: 'default',
+      },
+      trigger: { hour: 18, minute: 0, repeats: true, channelId: 'default' },
+    }).catch(console.error);
   }
 
   /**
@@ -124,38 +191,6 @@ export class PushNotificationsService {
   }
 
   /**
-   * Schedule daily Falcon Wisdom motivation
-   */
-  static async scheduleDailyMotivation(hour: number = 9, minute: number = 0): Promise<string> {
-    const motivationalMessages = [
-      'Every study session brings you closer to mastery. Soar today! 🦅',
-      'Your Falcon Focus streak is building momentum. Keep it up! 🔥',
-      'Small consistent efforts lead to extraordinary results. Study wisely! 📚',
-      'Your future self will thank you for studying today. Let\'s go! 💪',
-      'Challenges are just opportunities to grow stronger. Embrace them! 🌟',
-      'You\'re on an amazing journey. One study session at a time! ✨',
-      'Falcon Focus is here to help you soar to success! 🚀',
-      'Remember: Progress over perfection. Every minute counts! ⏰',
-    ];
-
-    const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
-
-    return await Notifications.scheduleNotificationAsync({
-      content: {
-        title: '🦅 Falcon Wisdom',
-        body: randomMessage,
-        data: { type: 'daily_motivation' },
-        sound: 'default',
-      },
-      trigger: {
-        hour,
-        minute,
-        repeats: true,
-      } as any,
-    });
-  }
-
-  /**
    * Schedule evening recap notification
    */
   static async scheduleEveningRecap(hour: number = 20, minute: number = 0): Promise<string> {
@@ -178,7 +213,7 @@ export class PushNotificationsService {
    * Schedule low energy alert
    */
   static async scheduleLowEnergyAlert(energyLevel: number): Promise<string | null> {
-    if (energyLevel > 2) return null; // Only alert if energy is low
+    if (energyLevel > 2) return null;
 
     return await Notifications.scheduleNotificationAsync({
       content: {
@@ -222,7 +257,7 @@ export class PushNotificationsService {
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
     } catch (error) {
-      console.error('Failed to cancel notifications:', error);
+      console.error('[Notifications] Failed to cancel:', error);
     }
   }
 
@@ -232,21 +267,10 @@ export class PushNotificationsService {
   static setupNotificationHandler(
     onResponse: (notification: Notifications.Notification) => void
   ): () => void {
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-        shouldShowBanner: true,
-        shouldShowList: true,
-      }),
-    });
-
     const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
       onResponse(response.notification);
     });
 
-    // Return cleanup function
     return () => subscription.remove();
   }
 
