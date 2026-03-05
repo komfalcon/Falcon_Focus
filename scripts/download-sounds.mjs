@@ -42,7 +42,7 @@ function download(url, dest) {
         return;
       }
       response.pipe(file);
-      file.on('finish', () => { file.close(); resolve(); });
+      file.on('finish', () => resolve());
     }).on('error', (err) => {
       file.close();
       reject(err);
@@ -54,14 +54,21 @@ async function main() {
   await mkdir(SOUNDS_DIR, { recursive: true });
   for (const sound of sounds) {
     const dest = path.join(SOUNDS_DIR, sound.name);
-    if (existsSync(dest)) { console.log(`⏭️ ${sound.name} already exists`); continue; }
+    if (existsSync(dest)) {
+      console.log(`⏭️ ${sound.name} already exists`);
+      continue;
+    }
     console.log(`⬇️ Downloading ${sound.name}...`);
     try {
       await download(sound.url, dest);
       console.log(`✅ ${sound.name} saved`);
     } catch {
-      try { await download(sound.fallback, dest); console.log(`✅ ${sound.name} saved (fallback)`); }
-      catch (e) { console.error(`❌ Failed: ${sound.name}`, e.message); }
+      try {
+        await download(sound.fallback, dest);
+        console.log(`✅ ${sound.name} saved (fallback)`);
+      } catch (e) {
+        console.error(`❌ Failed: ${sound.name}`, e.message);
+      }
     }
   }
 }
