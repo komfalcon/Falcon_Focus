@@ -197,7 +197,7 @@ export default function HomeScreen() {
       >
         {/* ─── 1. Hero Section ─── */}
         <LinearGradient
-          colors={['#0f1923', '#0a7ea420']}
+          colors={[colors.secondary, colors.primary + '20']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ borderRadius: 20, padding: 24, marginHorizontal: 16, marginTop: 16, marginBottom: 16 }}
