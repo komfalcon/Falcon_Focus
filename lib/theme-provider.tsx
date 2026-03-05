@@ -3,16 +3,21 @@ import { Appearance, View, useColorScheme as useSystemColorScheme } from "react-
 
 import { SchemeColors, type ColorScheme } from "@/constants/theme";
 
+type ThemeOption = "light" | "dark" | "system";
+
 type ThemeContextValue = {
   colorScheme: ColorScheme;
-  setColorScheme: (scheme: ColorScheme) => void;
+  theme: ThemeOption;
+  setColorScheme: (scheme: ThemeOption) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemScheme = useSystemColorScheme() ?? "light";
-  const [colorScheme, setColorSchemeState] = useState<ColorScheme>(systemScheme);
+  const [theme, setTheme] = useState<ThemeOption>("system");
+
+  const resolvedScheme: ColorScheme = theme === "system" ? (systemScheme ?? "light") : theme;
 
   const applyScheme = useCallback((scheme: ColorScheme) => {
     Appearance.setColorScheme?.(scheme);
@@ -27,21 +32,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const setColorScheme = useCallback((scheme: ColorScheme) => {
-    setColorSchemeState(scheme);
+  const setColorScheme = useCallback((newTheme: ThemeOption) => {
+    setTheme(newTheme);
+    const scheme: ColorScheme = newTheme === "system" ? (systemScheme ?? "light") : newTheme;
     applyScheme(scheme);
-  }, [applyScheme]);
+  }, [applyScheme, systemScheme]);
 
   useEffect(() => {
-    applyScheme(colorScheme);
-  }, [applyScheme, colorScheme]);
+    applyScheme(resolvedScheme);
+  }, [applyScheme, resolvedScheme]);
 
   const value = useMemo(
     () => ({
-      colorScheme,
+      colorScheme: resolvedScheme,
+      theme,
       setColorScheme,
     }),
-    [colorScheme, setColorScheme],
+    [resolvedScheme, theme, setColorScheme],
   );
 
   return (

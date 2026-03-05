@@ -1,10 +1,7 @@
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -14,6 +11,9 @@ import { useColors } from "@/hooks/use-colors";
 import { useAuth } from "@/lib/auth/use-auth";
 import { useGoogleAuth } from "@/lib/auth/google-auth";
 import * as Haptics from "expo-haptics";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -107,7 +107,7 @@ export default function SignUpScreen() {
               width: 88,
               height: 88,
               borderRadius: 24,
-              backgroundColor: colors.secondary,
+              backgroundColor: colors.isDark ? colors.surface : colors.secondary,
               alignItems: "center",
               justifyContent: "center",
               marginBottom: 16,
@@ -129,91 +129,59 @@ export default function SignUpScreen() {
         </View>
 
         {/* Sign Up Form */}
-        <View
-          style={{
-            backgroundColor: colors.surface,
-            borderRadius: 20,
-            padding: 24,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 4,
-          }}
-        >
+        <Card variant="elevated" padding={24} radius={20}>
           <Text style={{ fontSize: 22, fontWeight: "bold", color: colors.foreground, marginBottom: 20 }}>
             Create account
           </Text>
 
           {error ? (
-            <View
-              style={{
-                backgroundColor: colors.error + "15",
-                borderRadius: 10,
-                padding: 12,
-                marginBottom: 16,
-                borderWidth: 1,
-                borderColor: colors.error + "30",
-              }}
-            >
+            <Card variant="error" padding={12} radius={10} style={{ marginBottom: 16 }}>
               <Text style={{ color: colors.error, fontSize: 13 }}>{error}</Text>
-            </View>
+            </Card>
           ) : null}
 
-          {[
-            { label: "Full Name", value: name, setter: setName, placeholder: "Korede Omotosho", type: "default", secure: false, autoComplete: "name" as const },
-            { label: "Email", value: email, setter: setEmail, placeholder: "you@example.com", type: "email-address", secure: false, autoComplete: "email" as const },
-            { label: "Password", value: password, setter: setPassword, placeholder: "••••••••", type: "default", secure: true, autoComplete: "password-new" as const },
-            { label: "Confirm Password", value: confirmPassword, setter: setConfirmPassword, placeholder: "••••••••", type: "default", secure: true, autoComplete: "password-new" as const },
-          ].map((field, idx) => (
-            <View key={idx} style={{ marginBottom: idx < 3 ? 16 : 20 }}>
-              <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground, marginBottom: 6 }}>
-                {field.label}
-              </Text>
-              <TextInput
-                value={field.value}
-                onChangeText={field.setter}
-                placeholder={field.placeholder}
-                placeholderTextColor={colors.muted}
-                keyboardType={field.type as any}
-                autoCapitalize={field.type === "default" && !field.secure ? "words" : "none"}
-                secureTextEntry={field.secure}
-                autoComplete={field.autoComplete}
-                style={{
-                  borderWidth: 1.5,
-                  borderColor: colors.border,
-                  borderRadius: 12,
-                  padding: 14,
-                  fontSize: 15,
-                  color: colors.foreground,
-                  backgroundColor: colors.background,
-                }}
-              />
-            </View>
-          ))}
+          <Input
+            label="Full Name"
+            value={name}
+            onChangeText={setName}
+            placeholder="Korede Omotosho"
+            autoCapitalize="words"
+          />
 
-          <TouchableOpacity
+          <Input
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+
+          <Input
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            placeholder="••••••••"
+            secureTextEntry
+          />
+
+          <Input
+            label="Confirm Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            placeholder="••••••••"
+            secureTextEntry
+          />
+
+          <Button
+            label="Create Account"
             onPress={handleSignUp}
+            variant="primary"
+            size="lg"
+            loading={isLoading}
             disabled={isLoading || isGoogleLoading}
-            style={{
-              backgroundColor: colors.primary,
-              borderRadius: 14,
-              paddingVertical: 16,
-              alignItems: "center",
-              opacity: isLoading ? 0.7 : 1,
-              shadowColor: colors.primary,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 4,
-            }}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Create Account</Text>
-            )}
-          </TouchableOpacity>
+            fullWidth
+          />
 
           {/* Divider */}
           <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 16 }}>
@@ -223,43 +191,30 @@ export default function SignUpScreen() {
           </View>
 
           {/* Google Sign-Up Button */}
-          <TouchableOpacity
+          <Button
+            label="Continue with Google"
             onPress={handleGooglePress}
+            variant="outline"
+            size="lg"
+            loading={isGoogleLoading}
             disabled={!request || isLoading || isGoogleLoading}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 1.5,
-              borderColor: colors.border,
-              borderRadius: 14,
-              paddingVertical: 14,
-              backgroundColor: colors.background,
-              opacity: !request || isGoogleLoading ? 0.7 : 1,
-            }}
-          >
-            {isGoogleLoading ? (
-              <ActivityIndicator color={colors.foreground} />
-            ) : (
-              <>
-                <Text style={{ fontSize: 18, marginRight: 10 }}>G</Text>
-                <Text style={{ fontSize: 15, fontWeight: "600", color: colors.foreground }}>
-                  Continue with Google
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
-        </View>
+            fullWidth
+            icon={<Text style={{ fontSize: 18 }}>G</Text>}
+          />
+        </Card>
 
         {/* Sign In Link */}
         <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 24 }}>
           <Text style={{ color: colors.muted, fontSize: 14 }}>Already have an account? </Text>
-          <TouchableOpacity onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.push("/(auth)/sign-in");
-          }}>
-            <Text style={{ color: colors.primary, fontSize: 14, fontWeight: "bold" }}>Sign In</Text>
-          </TouchableOpacity>
+          <Button
+            label="Sign In"
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push("/(auth)/sign-in");
+            }}
+            variant="ghost"
+            size="sm"
+          />
         </View>
 
         {/* Footer */}

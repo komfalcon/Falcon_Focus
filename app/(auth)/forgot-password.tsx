@@ -1,10 +1,7 @@
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -13,6 +10,9 @@ import { useState } from "react";
 import { useColors } from "@/hooks/use-colors";
 import { trpc } from "@/lib/trpc";
 import * as Haptics from "expo-haptics";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
@@ -55,12 +55,14 @@ export default function ForgotPasswordScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Back Button */}
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={{ position: "absolute", top: 48, left: 24, padding: 8 }}
-        >
-          <Text style={{ color: colors.primary, fontSize: 16 }}>← Back</Text>
-        </TouchableOpacity>
+        <View style={{ position: "absolute", top: 48, left: 24 }}>
+          <Button
+            label="← Back"
+            onPress={() => router.back()}
+            variant="ghost"
+            size="sm"
+          />
+        </View>
 
         {/* Logo & Header */}
         <View style={{ alignItems: "center", marginBottom: 40 }}>
@@ -69,7 +71,7 @@ export default function ForgotPasswordScreen() {
               width: 88,
               height: 88,
               borderRadius: 24,
-              backgroundColor: colors.secondary,
+              backgroundColor: colors.isDark ? colors.surface : colors.secondary,
               alignItems: "center",
               justifyContent: "center",
               marginBottom: 16,
@@ -88,53 +90,31 @@ export default function ForgotPasswordScreen() {
         </View>
 
         {success ? (
-          <View
-            style={{
-              backgroundColor: colors.success + "15",
-              borderRadius: 20,
-              padding: 28,
-              alignItems: "center",
-              borderWidth: 1,
-              borderColor: colors.success + "30",
-            }}
-          >
-            <Text style={{ fontSize: 36, marginBottom: 12 }}>✉️</Text>
-            <Text style={{ fontSize: 18, fontWeight: "bold", color: colors.foreground, marginBottom: 8 }}>
-              Check your inbox
-            </Text>
-            <Text style={{ color: colors.muted, textAlign: "center", fontSize: 14, lineHeight: 20 }}>
-              If that email address is in our system, we've sent a password reset link to{" "}
-              <Text style={{ fontWeight: "bold", color: colors.foreground }}>{email}</Text>
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push("/(auth)/sign-in");
-              }}
-              style={{
-                backgroundColor: colors.primary,
-                borderRadius: 14,
-                paddingVertical: 14,
-                paddingHorizontal: 32,
-                marginTop: 24,
-              }}
-            >
-              <Text style={{ color: "#fff", fontSize: 15, fontWeight: "bold" }}>Back to Sign In</Text>
-            </TouchableOpacity>
-          </View>
+          <Card variant="success" padding={28} radius={20}>
+            <View style={{ alignItems: "center" }}>
+              <Text style={{ fontSize: 36, marginBottom: 12 }}>✉️</Text>
+              <Text style={{ fontSize: 18, fontWeight: "bold", color: colors.foreground, marginBottom: 8 }}>
+                Check your inbox
+              </Text>
+              <Text style={{ color: colors.muted, textAlign: "center", fontSize: 14, lineHeight: 20 }}>
+                If that email address is in our system, we've sent a password reset link to{" "}
+                <Text style={{ fontWeight: "bold", color: colors.foreground }}>{email}</Text>
+              </Text>
+              <View style={{ marginTop: 24 }}>
+                <Button
+                  label="Back to Sign In"
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    router.push("/(auth)/sign-in");
+                  }}
+                  variant="primary"
+                  size="md"
+                />
+              </View>
+            </View>
+          </Card>
         ) : (
-          <View
-            style={{
-              backgroundColor: colors.surface,
-              borderRadius: 20,
-              padding: 24,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.08,
-              shadowRadius: 12,
-              elevation: 4,
-            }}
-          >
+          <Card variant="elevated" padding={24} radius={20}>
             <Text style={{ fontSize: 22, fontWeight: "bold", color: colors.foreground, marginBottom: 8 }}>
               Reset password
             </Text>
@@ -143,67 +123,30 @@ export default function ForgotPasswordScreen() {
             </Text>
 
             {error ? (
-              <View
-                style={{
-                  backgroundColor: colors.error + "15",
-                  borderRadius: 10,
-                  padding: 12,
-                  marginBottom: 16,
-                  borderWidth: 1,
-                  borderColor: colors.error + "30",
-                }}
-              >
+              <Card variant="error" padding={12} radius={10} style={{ marginBottom: 16 }}>
                 <Text style={{ color: colors.error, fontSize: 13 }}>{error}</Text>
-              </View>
+              </Card>
             ) : null}
 
-            <View style={{ marginBottom: 20 }}>
-              <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground, marginBottom: 6 }}>
-                Email
-              </Text>
-              <TextInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="you@example.com"
-                placeholderTextColor={colors.muted}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                style={{
-                  borderWidth: 1.5,
-                  borderColor: colors.border,
-                  borderRadius: 12,
-                  padding: 14,
-                  fontSize: 15,
-                  color: colors.foreground,
-                  backgroundColor: colors.background,
-                }}
-              />
-            </View>
+            <Input
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="you@example.com"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
 
-            <TouchableOpacity
+            <Button
+              label="Send Reset Link"
               onPress={handleReset}
+              variant="primary"
+              size="lg"
+              loading={isLoading}
               disabled={isLoading}
-              style={{
-                backgroundColor: colors.primary,
-                borderRadius: 14,
-                paddingVertical: 16,
-                alignItems: "center",
-                opacity: isLoading ? 0.7 : 1,
-                shadowColor: colors.primary,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 4,
-              }}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Send Reset Link</Text>
-              )}
-            </TouchableOpacity>
-          </View>
+              fullWidth
+            />
+          </Card>
         )}
 
         {/* Footer */}
