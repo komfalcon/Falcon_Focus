@@ -16,7 +16,9 @@
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "qr": "node scripts/generate_qr.mjs"
+    "qr": "node scripts/generate_qr.mjs",
+    "download-sounds": "node scripts/download-sounds.mjs",
+    "postinstall": "node scripts/download-sounds.mjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.3",
