@@ -33,8 +33,8 @@ export const DEFAULT_PREFERENCES: PushNotificationPreferences = {
 };
 
 export class PushNotificationsService {
-  private static TOKEN_KEY = 'push_token';
-  private static SETTINGS_KEY = 'notification_settings';
+  private static readonly TOKEN_KEY = 'push_token';
+  private static readonly SETTINGS_KEY = 'notification_settings';
 
   /**
    * Request notification permissions and set up Android channels
@@ -135,7 +135,7 @@ export class PushNotificationsService {
       identifier: 'daily_motivation',
       content: { title: '🦅 Falcon Focus', body, sound: 'default' },
       trigger: { hour: 8, minute: 0, repeats: true, channelId: 'default' },
-    }).catch(console.error);
+    }).catch((e) => console.error('[Notifications] Failed to schedule daily motivation:', e));
   }
 
   /**
@@ -152,7 +152,7 @@ export class PushNotificationsService {
         sound: 'default',
       },
       trigger: { hour: 18, minute: 0, repeats: true, channelId: 'default' },
-    }).catch(console.error);
+    }).catch((e) => console.error('[Notifications] Failed to schedule streak reminder:', e));
   }
 
   /**
