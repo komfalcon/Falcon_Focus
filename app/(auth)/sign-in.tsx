@@ -1,10 +1,7 @@
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -14,6 +11,9 @@ import { useColors } from "@/hooks/use-colors";
 import { useAuth } from "@/lib/auth/use-auth";
 import { useGoogleAuth } from "@/lib/auth/google-auth";
 import * as Haptics from "expo-haptics";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -119,117 +119,55 @@ export default function SignInScreen() {
         </View>
 
         {/* Sign In Form */}
-        <View
-          style={{
-            backgroundColor: colors.surface,
-            borderRadius: 20,
-            padding: 24,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.08,
-            shadowRadius: 12,
-            elevation: 4,
-          }}
-        >
+        <Card variant="elevated" padding={24} radius={20}>
           <Text style={{ fontSize: 22, fontWeight: "bold", color: colors.foreground, marginBottom: 20 }}>
             Welcome back
           </Text>
 
           {error ? (
-            <View
-              style={{
-                backgroundColor: colors.error + "15",
-                borderRadius: 10,
-                padding: 12,
-                marginBottom: 16,
-                borderWidth: 1,
-                borderColor: colors.error + "30",
-              }}
-            >
+            <Card variant="error" padding={12} radius={10} style={{ marginBottom: 16 }}>
               <Text style={{ color: colors.error, fontSize: 13 }}>{error}</Text>
-            </View>
+            </Card>
           ) : null}
 
-          <View style={{ marginBottom: 16 }}>
-            <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground, marginBottom: 6 }}>
-              Email
-            </Text>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              placeholder="you@example.com"
-              placeholderTextColor={colors.muted}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              style={{
-                borderWidth: 1.5,
-                borderColor: colors.border,
-                borderRadius: 12,
-                padding: 14,
-                fontSize: 15,
-                color: colors.foreground,
-                backgroundColor: colors.background,
-              }}
+          <Input
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+
+          <Input
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            placeholder="••••••••"
+            secureTextEntry
+          />
+
+          <View style={{ marginTop: 4 }}>
+            <Button
+              label="Sign In"
+              onPress={handleSignIn}
+              variant="primary"
+              size="lg"
+              loading={isLoading}
+              disabled={isLoading || isGoogleLoading}
+              fullWidth
             />
           </View>
 
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontSize: 13, fontWeight: "600", color: colors.foreground, marginBottom: 6 }}>
-              Password
-            </Text>
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              placeholder="••••••••"
-              placeholderTextColor={colors.muted}
-              secureTextEntry
-              autoComplete="password"
-              style={{
-                borderWidth: 1.5,
-                borderColor: colors.border,
-                borderRadius: 12,
-                padding: 14,
-                fontSize: 15,
-                color: colors.foreground,
-                backgroundColor: colors.background,
-              }}
-            />
-          </View>
-
-          <TouchableOpacity
-            onPress={handleSignIn}
-            disabled={isLoading || isGoogleLoading}
-            style={{
-              backgroundColor: colors.primary,
-              borderRadius: 14,
-              paddingVertical: 16,
-              alignItems: "center",
-              marginBottom: 12,
-              opacity: isLoading ? 0.7 : 1,
-              shadowColor: colors.primary,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 4,
-            }}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Sign In</Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
+          <Button
+            label="Forgot password?"
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push("/(auth)/forgot-password");
             }}
-            style={{ alignItems: "center", paddingVertical: 8 }}
-          >
-            <Text style={{ color: colors.primary, fontSize: 13 }}>Forgot password?</Text>
-          </TouchableOpacity>
+            variant="ghost"
+            size="sm"
+          />
 
           {/* Divider */}
           <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 16 }}>
@@ -239,43 +177,30 @@ export default function SignInScreen() {
           </View>
 
           {/* Google Sign-In Button */}
-          <TouchableOpacity
+          <Button
+            label="Continue with Google"
             onPress={handleGooglePress}
+            variant="outline"
+            size="lg"
+            loading={isGoogleLoading}
             disabled={!request || isLoading || isGoogleLoading}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 1.5,
-              borderColor: colors.border,
-              borderRadius: 14,
-              paddingVertical: 14,
-              backgroundColor: colors.background,
-              opacity: !request || isGoogleLoading ? 0.7 : 1,
-            }}
-          >
-            {isGoogleLoading ? (
-              <ActivityIndicator color={colors.foreground} />
-            ) : (
-              <>
-                <Text style={{ fontSize: 18, marginRight: 10 }}>G</Text>
-                <Text style={{ fontSize: 15, fontWeight: "600", color: colors.foreground }}>
-                  Continue with Google
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
-        </View>
+            fullWidth
+            icon={<Text style={{ fontSize: 18 }}>G</Text>}
+          />
+        </Card>
 
         {/* Sign Up Link */}
         <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 24 }}>
           <Text style={{ color: colors.muted, fontSize: 14 }}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            router.push("/(auth)/sign-up");
-          }}>
-            <Text style={{ color: colors.primary, fontSize: 14, fontWeight: "bold" }}>Sign Up</Text>
-          </TouchableOpacity>
+          <Button
+            label="Sign Up"
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push("/(auth)/sign-up");
+            }}
+            variant="ghost"
+            size="sm"
+          />
         </View>
 
         {/* Footer */}

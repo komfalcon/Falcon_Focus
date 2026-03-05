@@ -6,6 +6,7 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { useStudy } from '@/lib/study-context';
@@ -195,15 +196,12 @@ export default function HomeScreen() {
         }
       >
         {/* ─── 1. Hero Section ─── */}
-        <View
-          className="rounded-2xl p-6 mx-4 mt-4 mb-4 overflow-hidden"
-          style={{ backgroundColor: colors.secondary }}
+        <LinearGradient
+          colors={['#0f1923', '#0a7ea420']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ borderRadius: 20, padding: 24, marginHorizontal: 16, marginTop: 16, marginBottom: 16 }}
         >
-          {/* Teal tint overlay */}
-          <View
-            className="absolute inset-0"
-            style={{ backgroundColor: colors.primary, opacity: 0.15 }}
-          />
 
           <View className="flex-row justify-between items-center mb-4">
             <View>
@@ -241,7 +239,7 @@ export default function HomeScreen() {
           <Text className="text-xs mt-1" style={{ color: colors.muted }}>
             Level up in ~{daysToLevelUp} day{daysToLevelUp !== 1 ? 's' : ''}
           </Text>
-        </View>
+        </LinearGradient>
 
         {/* ─── 2. Metrics Row ─── */}
         <ScrollView
