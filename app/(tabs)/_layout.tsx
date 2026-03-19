@@ -1,35 +1,18 @@
-import { Tabs, Redirect } from "expo-router";
+import { Tabs } from "expo-router";
+import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Platform, View, ActivityIndicator } from "react-native";
 import { useColors } from "@/hooks/use-colors";
-import { useAuthContext } from "@/lib/auth/auth-context";
 
 export default function TabLayout() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { isAuthenticated, isLoading } = useAuthContext();
-  const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
-  const tabBarHeight = 60 + bottomPadding;
-
-  // Wait for auth to resolve before rendering or redirecting
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
-  }
-
-  // Redirect unauthenticated users to sign-in
-  if (!isAuthenticated) {
-    return <Redirect href="/(auth)/sign-in" />;
-  }
 
   return (
     <Tabs
+      initialRouteName="focus"
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
@@ -37,71 +20,38 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '600',
+          fontWeight: "600",
           letterSpacing: 0.2,
         },
         tabBarStyle: {
-          backgroundColor: colors.isDark ? '#0f1923' : '#ffffff',
+          backgroundColor: colors.isDark ? "#0f1923" : "#ffffff",
           borderTopWidth: 1,
           borderTopColor: colors.border,
-          height: 60 + insets.bottom,
-          paddingBottom: insets.bottom,
+          height: Platform.OS === "web" ? 60 : 60 + insets.bottom,
+          paddingBottom: Platform.OS === "web" ? 8 : insets.bottom,
           paddingTop: 8,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: colors.isDark ? 0.3 : 0.06,
-          shadowRadius: 12,
-          elevation: 8,
         },
       }}
     >
       <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="planner"
-        options={{
-          title: "Planner",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="calendar" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="focus"
         options={{
           title: "Focus",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="target" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="target" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="learn"
+        name="history"
         options={{
-          title: "Learn",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="book" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="flock"
-        options={{
-          title: "Flock",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.2.fill" color={color} />,
+          title: "History",
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="chart-bar" color={color} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gearshape.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="progress"
-        options={{
-          title: "Progress",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="gearshape.fill" color={color} />,
         }}
       />
     </Tabs>
