@@ -11,18 +11,21 @@ const SOUNDS_DIR = path.join(__dirname, '..', 'assets', 'sounds');
 const sounds = [
   {
     name: 'tick.mp3',
-    url: 'https://freesound.org/data/previews/259/259723_4486188-lq.mp3',
-    fallback: 'https://www.soundjay.com/misc/sounds/clock-ticking-1.mp3',
+    // Loud sharp mechanical clock tick — aggressive, not soft
+    url: 'https://freesound.org/data/previews/399/399934_4284968-lq.mp3',
+    fallback: 'https://freesound.org/data/previews/256/256113_3263906-lq.mp3',
   },
   {
     name: 'bell.mp3',
-    url: 'https://freesound.org/data/previews/411/411642_5121236-lq.mp3',
-    fallback: 'https://www.soundjay.com/buttons/sounds/button-09.mp3',
+    // Loud alarm ringtone — not a soft chime, a proper wake-up alarm
+    url: 'https://freesound.org/data/previews/442/442127_6142149-lq.mp3',
+    fallback: 'https://freesound.org/data/previews/411/411642_5121236-lq.mp3',
   },
   {
     name: 'break-start.mp3',
+    // Short sharp notification — signals break, distinct from alarm
     url: 'https://freesound.org/data/previews/341/341695_5858296-lq.mp3',
-    fallback: 'https://www.soundjay.com/buttons/sounds/button-37.mp3',
+    fallback: 'https://freesound.org/data/previews/522/522090_2064400-lq.mp3',
   },
 ];
 
